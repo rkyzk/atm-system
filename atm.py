@@ -23,7 +23,7 @@ while True:
             break
         if choice == "b":
             # In real settings the user will insert money, and the machine will
-            # count the inserted money, but here, let the user enter the deposit amount.
+            # count the inserted money, but here, let the user enter the deposit value.
             amount = input('Enter the amount of money you are depositing: ')
             deposit(amount, acct_id)
             print(f"${amount} was depositted to your account.")
