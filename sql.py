@@ -74,26 +74,52 @@ def create_table_transactions():
     finally:
         conn.close()
 
+def print_with_linebreaks(list):
+    for row in list:
+        print(row)
+
 def print_tables():
     conn = sqlite3.connect('bank.db')  
     c = conn.cursor()
     c.execute("""SELECT * FROM Users""")
     print("Users")
-    print(c.fetchall())
+    print_with_linebreaks(c.fetchall())
     c.execute("""SELECT * FROM Accounts""")
     print("-----------------------------")
     print("Accounts")
-    print(c.fetchall())
+    print_with_linebreaks(c.fetchall())
     c.execute("""SELECT * FROM Transactions""")
     print("-----------------------------")
     print("Transactions")
-    print(c.fetchall())
+    print_with_linebreaks(c.fetchall())
     conn.close()
 
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()
 print_tables()
+
+def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_id):
+    conn = sqlite3.connect('bank.db') 
+    c = conn.cursor()
+    c.execute("INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id," 
+     + ":salt, :key, :svg_acct_id, :check_acct_id, :flag)",
+        {'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id,
+        'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id,
+        'check_acct_id': check_acct_id, 'flag': 'a'})
+    conn.commit()
+    conn.close()
+
+# insert account to table "Accounts"
+def insert_account(acct_id, user_id, holder, bank, acct_type, balance):
+    conn = sqlite3.connect('bank.db') 
+    c = conn.cursor()
+    c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
+        {'acct_id': acct_id, 'user_id': user_id, 'holder': holder, 'bank': bank,
+        'acct_type': acct_type, 'balance': balance})
+    conn.commit()
+    conn.close()
+
 
 def withdraw(user_id, amount):
     pass
