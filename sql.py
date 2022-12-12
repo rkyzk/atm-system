@@ -1,4 +1,20 @@
 import sqlite3
+import decimal
+D=decimal.Decimal
+
+from datetime import datetime
+
+def adapt_decimal(d):
+    return str(d)
+
+def convert_decimal(s):
+    return D(s.decode('utf-8'))
+
+# Register the adapter
+sqlite3.register_adapter(D, adapt_decimal)
+
+#Register the converter
+sqlite3.register_converter("decimal", convert_decimal)
 
 """
 Create table "Users" to store information of users.
@@ -9,7 +25,7 @@ bank -- bank name
 """
 def create_table_users():
     try:
-        conn = sqlite3.connect('bank.db')
+        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) # do I need this here?
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Users (
@@ -34,7 +50,7 @@ Create Table "Accounts" to store information accounts.
 """
 def create_table_accounts():
     try:
-        conn = sqlite3.connect('bank.db')
+        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Accounts (
@@ -79,7 +95,7 @@ def print_with_linebreaks(list):
         print(row)
 
 def print_tables():
-    conn = sqlite3.connect('bank.db')  
+    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)  
     c = conn.cursor()
     c.execute("""SELECT * FROM Users""")
     print("Users")
@@ -90,14 +106,18 @@ def print_tables():
     print_with_linebreaks(c.fetchall())
     c.execute("""SELECT * FROM Transactions""")
     print("-----------------------------")
-    print("Transactions")
+    print("Transactions")   
     print_with_linebreaks(c.fetchall())
     conn.close()
 
-#create_table_users()
-#create_table_accounts()
-#create_table_transactions()
-print_tables()
+def delete_tables():
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    with conn:
+        c.execute("""DROP TABLE Users""")
+        c.execute("""DROP TABLE Accounts""")
+        c.execute("""DROP TABLE Transactions""")
+    conn.close()
 
 def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_id):
     conn = sqlite3.connect('bank.db') 
@@ -112,7 +132,7 @@ def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_
 
 # insert account to table "Accounts"
 def insert_account(acct_id, user_id, holder, bank, acct_type, balance):
-    conn = sqlite3.connect('bank.db') 
+    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) 
     c = conn.cursor()
     c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
         {'acct_id': acct_id, 'user_id': user_id, 'holder': holder, 'bank': bank,
@@ -120,6 +140,15 @@ def insert_account(acct_id, user_id, holder, bank, acct_type, balance):
     conn.commit()
     conn.close()
 
+def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, amount, date):
+    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) 
+    c = conn.cursor()
+    c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
+                  {'acct_id': acct_id, 'user_id': user_id,
+                   'trs_type': trs_type, 'trs_to_or_from': trs_to_or_from,
+                   'trs_notes': trs_notes, 'amount': "+" + amount, 'date': date})
+    conn.commit()
+    conn.close()
 
 def withdraw(user_id, amount):
     pass
@@ -135,3 +164,10 @@ def display_balance(user_id):
 
 def display_transactions(user_id):
     pass
+
+
+#create_table_users()
+#create_table_accounts()
+#create_table_transactions()
+# delete_tables()
+print_tables()
