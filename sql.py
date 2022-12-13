@@ -8,12 +8,12 @@ def adapt_decimal(d):
     return str(d)
 
 def convert_decimal(s):
-    return D(s.decode('utf-8'))
+    return decimal.Decimal(s.decode('utf-8'))
 
 # Register the adapter
 sqlite3.register_adapter(D, adapt_decimal)
 
-#Register the converter
+# Register the converter
 sqlite3.register_converter("decimal", convert_decimal)
 
 """
@@ -25,7 +25,7 @@ bank -- bank name
 """
 def create_table_users():
     try:
-        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) # do I need this here?
+        conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Users (
@@ -72,7 +72,7 @@ Create Table "Transactions" to store transaction records.
 """
 def create_table_transactions():
     try:
-        conn = sqlite3.connect('bank.db')
+        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Transactions (
@@ -103,7 +103,8 @@ def print_tables():
     c.execute("""SELECT * FROM Accounts""")
     print("-----------------------------")
     print("Accounts")
-    print_with_linebreaks(c.fetchall())
+    list = c.fetchall()
+    print(type(list[-1][5]))
     c.execute("""SELECT * FROM Transactions""")
     print("-----------------------------")
     print("Transactions")   
@@ -170,4 +171,18 @@ def display_transactions(user_id):
 #create_table_accounts()
 #create_table_transactions()
 # delete_tables()
-print_tables()
+
+def convert_val_to_decimal(val):
+    if val.isdigit():
+        decimal_str = val + ".00"
+        return decimal_str
+
+def validate_val(val):
+    if val[-3] == "." and val.replace(".", "").isdigit():
+        return True
+    else:
+        return False
+
+print(validate_val("1.23.55"))
+
+
