@@ -50,7 +50,7 @@ Create Table "Accounts" to store information accounts.
 """
 def create_table_accounts():
     try:
-        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Accounts (
@@ -59,7 +59,7 @@ def create_table_accounts():
                 holder text NOT NULL,
                 bank text NOT NULL,
                 acct_type text NOT NULL,
-                balance decimal NOT NULL
+                balance text NOT NULL
                 )""")
     except Exception as e:
         print("There was an error.  The table wasn't created.")
@@ -72,7 +72,7 @@ Create Table "Transactions" to store transaction records.
 """
 def create_table_transactions():
     try:
-        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Transactions (
@@ -95,7 +95,7 @@ def print_with_linebreaks(list):
         print(row)
 
 def print_tables():
-    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)  
+    conn = sqlite3.connect('bank.db')  
     c = conn.cursor()
     c.execute("""SELECT * FROM Users""")
     print("Users")
@@ -103,8 +103,7 @@ def print_tables():
     c.execute("""SELECT * FROM Accounts""")
     print("-----------------------------")
     print("Accounts")
-    list = c.fetchall()
-    print(type(list[-1][5]))
+    print_with_linebreaks(c.fetchall())
     c.execute("""SELECT * FROM Transactions""")
     print("-----------------------------")
     print("Transactions")   
@@ -133,7 +132,7 @@ def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_
 
 # insert account to table "Accounts"
 def insert_account(acct_id, user_id, holder, bank, acct_type, balance):
-    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) 
+    conn = sqlite3.connect('bank.db') 
     c = conn.cursor()
     c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
         {'acct_id': acct_id, 'user_id': user_id, 'holder': holder, 'bank': bank,
@@ -142,7 +141,7 @@ def insert_account(acct_id, user_id, holder, bank, acct_type, balance):
     conn.close()
 
 def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, amount, date):
-    conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES) 
+    conn = sqlite3.connect('bank.db') 
     c = conn.cursor()
     c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
                   {'acct_id': acct_id, 'user_id': user_id,
@@ -167,22 +166,21 @@ def display_transactions(user_id):
     pass
 
 
-#create_table_users()
-#create_table_accounts()
-#create_table_transactions()
+create_table_users()
+create_table_accounts()
+create_table_transactions()
 # delete_tables()
+print_tables()
 
-def convert_val_to_decimal(val):
+def validate_val(val):
     if val.isdigit():
         decimal_str = val + ".00"
         return decimal_str
-
-def validate_val(val):
-    if val[-3] == "." and val.replace(".", "").isdigit():
-        return True
+    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
+        return val
     else:
-        return False
+        return "Invalid entry"
 
-print(validate_val("1.23.55"))
+
 
 
