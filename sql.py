@@ -166,11 +166,11 @@ def display_transactions(user_id):
     pass
 
 
-create_table_users()
-create_table_accounts()
-create_table_transactions()
+# create_table_users()
+# create_table_accounts()
+# create_table_transactions()
 # delete_tables()
-print_tables()
+# print_tables()
 
 def validate_val(val):
     if val.isdigit():

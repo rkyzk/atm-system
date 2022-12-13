@@ -1,8 +1,37 @@
 from sql import * 
 import decimal
 D=decimal.Decimal
+import random
 from datetime import datetime
-"""
+import hashlib
+import os
+
+def get_pin():
+    """
+    Generate a random 6-digit pin and return it.
+    return str_pin -- pin
+    """
+    str_pin = ""  
+    for n in range(6):
+        str_pin += str(random.randrange(10))
+    return str_pin
+
+
+def hash_pin_with_salt(pin, salt):
+    """
+    Hash the pin with a given salt and return the key.
+    """
+    key = hashlib.pbkdf2_hmac(
+        'sha256',
+        pin.encode('utf-8'),  # convert the pin to bytes
+        salt,
+        100000,  # number of iterations of SHA256
+        dklen=128  # get a 128-byte key
+    )
+    return key
+
+
+
 
 print("****************************")
 print("          Hello!")
@@ -14,6 +43,17 @@ print("Enter 'a' for North Bank\n'b' for East Bank\n'c' for South Bank.")
 code = input("Your input: ")
 svg_dp_str = input("\nInitial deposit in savings account: ")
 check_dp_str = input("Initial deposit in checking account: ")
+
+# Get a pin and salt and hash the pin to get a key
+salt = os.urandom(32)
+pin = get_pin()
+key = hash_pin_with_salt(pin, salt)
+# In real situations the pin will be shown only to the customer
+# but here, it will be printed so testers can use it.
+print(f"Pin: {pin}")
+print(key) # remove this later
+print(salt)  # remove this later
+
 """
 
 #insert a sample user
@@ -40,4 +80,4 @@ insert_transaction(3200001, 300001, "deposit", "NA", "initial deposit", '1000.00
 
 
 
-
+"""
