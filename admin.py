@@ -16,7 +16,6 @@ def get_pin():
         str_pin += str(random.randrange(10))
     return str_pin
 
-
 def hash_pin_with_salt(pin, salt):
     """
     Hash the pin with a given salt and return the key.
@@ -30,8 +29,26 @@ def hash_pin_with_salt(pin, salt):
     )
     return key
 
+def validate_val(val):
+    if val.isdigit():
+        return True
+    elif len(val) < 4:
+        return False 
+    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
+        return True
+    else:
+        return False
 
-
+def collect_val(type_val):
+    while True:
+        dp = input(f"Enter {type_val} (as integer 100 or with cents 100.00): ")
+        if not validate_val(dp):
+            print("Invalid entry.")
+        elif dp.isdigit():
+            decimal_val = dp + ".00"
+            return decimal_val
+        else:
+            return dp
 
 print("****************************")
 print("          Hello!")
@@ -41,8 +58,8 @@ lname = input("Enter the customer's last name: ")
 print("\nAt which bank are you creating accounts?")
 print("Enter 'a' for North Bank\n'b' for East Bank\n'c' for South Bank.")
 code = input("Your input: ")
-svg_dp_str = input("\nInitial deposit in savings account: ")
-check_dp_str = input("Initial deposit in checking account: ")
+svg_dp = collect_val("Initial deposit in savings account")
+check_dp = collect_val("Initial deposit in checking account")
 
 # Get a pin and salt and hash the pin to get a key
 salt = os.urandom(32)

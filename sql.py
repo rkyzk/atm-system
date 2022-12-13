@@ -172,14 +172,7 @@ def display_transactions(user_id):
 # delete_tables()
 # print_tables()
 
-def validate_val(val):
-    if val.isdigit():
-        decimal_str = val + ".00"
-        return decimal_str
-    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
-        return val
-    else:
-        return "Invalid entry"
+
 
 
 
