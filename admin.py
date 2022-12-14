@@ -67,7 +67,7 @@ def validate_name(name):
     else:
         return False
 
-def collect_name(f_l_name):
+def collect_name(fill_in_the_b):
     """
     Prompt the user to enter first or last name.
     Have the input validate.  If it passes the validation,
@@ -77,7 +77,7 @@ def collect_name(f_l_name):
     f_l_name -- specifies first or last name
     """
     while True:
-        name = input(f"Enter the customer's {f_l_name}: ")
+        name = input(f"Enter the customer's {fill_in_the_b}: ")
         if validate_name(name):
             return name
         else:
@@ -178,14 +178,14 @@ date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 user = User(fname, lname, holder, bank, user_id, salt, key, svg_acct_id, 
             check_acct_id, svg_dp, check_dp, date)
 while True:
-    # Print the user information for confirmation
+    # Print the user information for confirmation before inserting it to DB
     print("\n----------------------------------")
     print("Confirm the following information")
     print("----------------------------------")
     print_data(user)
     # Ask if the data can be stored as it was printed or needs to be changed.
     print("Would you like to \na: insert the above data into DB\n"
-          "b: make changes\nc: terminate the session")
+          "b: make changes\nc: terminate the session\n")
     confirm = input("Enter 'a', 'b' or 'c': ").lower()
     if confirm not in ['a', 'b', 'c']:
         print("\nInvalid entry.  Please try again.")
@@ -197,7 +197,63 @@ while True:
     if confirm == "c":
         print("\nAre you sure you want to terminate the session?\n"
               "All information will be lost.\n")
-
+        while True:
+            print("Enter 'a' to terminate, 'b' to go back to the previous options.")
+            option = input("Your input: ").lower()
+            if option == "a":
+                print("Bye!  Have a nice day.")
+                exit()
+            if option == "b":
+                break
+            else:
+                print("\nInvalid entry.")
+                continue
+    else:                                                        # ----------ok?
+        # Let the administrator choose which item to update.
+        while True:
+            print("Select the item you wish to change.\n")
+            print("a: First name")
+            print("b: Last name")
+            print("c: Bank")
+            print("d: Deposit in savings account")
+            print("e: Deposit in checking account")
+            print("f: Go back to the previous options\n")
+            choice = input("Enter a-f: ").lower()
+            # Let the administrator make changes in the customer's information
+            if choice not in ['a', 'b', 'c', 'd', 'e', 'f']:
+                print("Invalid entry. Please try again.\n")
+                continue
+            elif choice == 'a':
+                user.fname = collect_name("correct first name")
+                break
+            elif choice == 'b':
+                user.lname = collect_name("correct last name: ")
+                break
+            elif choice == 'c':
+                # Change the bank, thereby get a new user ID and account IDs.
+                while True:
+                    print("Enter \n'a' for North Bank \n'b' for East Bank\n'c' for South Bank.")
+                    code = input("Your input: ").lower()  # The bank code
+                    if code not in ['a', 'b', 'c']:
+                        print("Invalid entry.\n")
+                        continue
+                    else:
+                        user.bank, user.user_id, new_accts = get_ids(code)
+                        user.svg_acct_id, user.check_acct_id = new_accts
+                        print(user.user_id)
+                        break
+                break    
+            elif choice == 'd':
+                user.svg_dp = collect_val("Initial deposit in savings account: ")
+                break
+            elif choice == 'e':
+                user.check_dp = collect_val("Initial deposit in checking account: ")
+                break               
+            else:
+                break
+# call the function that inserts data into DB
+print("you got here!")
+            
 """
 
 #insert a sample user
