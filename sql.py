@@ -119,6 +119,31 @@ def delete_tables():
         c.execute("""DROP TABLE Transactions""")
     conn.close()
 
+def get_user_id(code):
+    """
+    Get a list of existing user IDs of the bank of selection
+    and return the next available ID for that bank.
+
+    Argument:
+    code -- bank code
+    """
+    if code == "a":
+        sql = "SELECT user_id FROM users WHERE user_id LIKE '1%'"
+    elif code == "b":
+        sql = "SELECT user_id FROM users WHERE user_id LIKE '2%'"
+    else:
+        sql = "SELECT user_id FROM users WHERE user_id LIKE '3%'"
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    c.execute(sql)
+    list = c.fetchall()
+    conn.close()
+    # return the highest number used among existing IDs added by 1.
+    return max(list[0]) + 1
+
+def get_acct_ids():
+    pass
+
 def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_id):
     conn = sqlite3.connect('bank.db') 
     c = conn.cursor()

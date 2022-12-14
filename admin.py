@@ -66,12 +66,15 @@ def validate_name(name):
     else:
         return False
 
-"""
-Prompt the user to enter first or last name.
-Have the input validate.  If it passes the validation,
-return the input. If not prompt the user to reenter the name. 
-"""
 def collect_name(f_l_name):
+    """
+    Prompt the user to enter first or last name.
+    Have the input validate.  If it passes the validation,
+    return the input. If not prompt the user to reenter the name. 
+
+    Argument:
+    f_l_name -- specifies first or last name
+    """
     while True:
         name = input(f"Enter the customer's {f_l_name}: ")
         if validate_name(name):
@@ -79,6 +82,40 @@ def collect_name(f_l_name):
         else:
             print("Invalid entry (enter only alphabets).")
             time.sleep(1.5)
+
+def get_ids(code):
+    """
+    Get a user ID, savings account ID and checking account ID for a new customer 
+    based on their selection of the bank.
+
+    Argument:
+    code -- the bank selection (a: North Bank; b: East Bankl c: South Bank)
+    Return value:
+    acct_info  -- list containing the bank name, user ID and account IDs
+    """
+    while True:
+        # Assign the bank name to the variable 'bank'.
+        if code == "a":
+            bank = "North Bank"
+            break
+        if code == "b":
+            bank = "East Bank"
+            break
+        if code == "c":
+            bank = "South Bank"
+            break
+        else:  # correct------------------------------?
+            print("Invalid entry.  Please try again.")
+            time.sleep(1.5)
+
+    user_id = get_user_id(code)
+    new_accts = get_acct_ids(code)
+    # Store the bank name, user ID and account IDs in the list "account_info," and return the list
+    acct_info.append(bank)
+    acct_info.append(user_id)
+    acct_info.append(new_accts)
+    return acct_info
+
 
 print("****************************")
 print("          Hello!")
@@ -91,9 +128,16 @@ fname = collect_name("first name")
 lname = collect_name("last name")
 # the customer's full name       
 holder = fname + " " + lname
+# Have the user select a bank
 print("\nAt which bank are you creating accounts?")
-print("Enter 'a' for North Bank\n'b' for East Bank\n'c' for South Bank.")
-code = input("Your input: ")
+while True:
+    print("Enter 'a' for North Bank\n'b' for East Bank\n'c' for South Bank.")
+    code = input("Your input: ").lower()  # The bank code
+    if code not in ["a", "b", "c"]:
+        print("Invalid entry.")
+        time.sleep(1.5)
+    else:
+        break
 svg_dp = collect_val("Initial deposit in savings account")
 check_dp = collect_val("Initial deposit in checking account")
 
