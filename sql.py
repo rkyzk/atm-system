@@ -141,8 +141,37 @@ def get_user_id(code):
     # return the highest number used among existing IDs added by 1.
     return max(list[0]) + 1
 
-def get_acct_ids():
-    pass
+def get_acct_ids(code):
+    """
+    Get a list of savings and checking account IDs, 
+    find the highest number for each of both account IDs, 
+    and return the next available IDs (highest existing numbers + 1).
+
+    Argument:
+    code -- bank code 
+    """
+    if code == "a":
+        #  Store the prefixes of savings and checking account IDs of North Bank.
+        sql_var = ["'11%'", "'12%'"]
+    elif code == "b":
+        # Do the same for East Bank
+        sql_var = ["'21%'", "'22%'"]
+    else:
+        # Do the same for South Bank
+        sql_var = ["'31%'", "'32%'"]
+    new_accts = []
+
+    # In the first round of the for loop below, store the next available savings account ID
+    # In the second round, store the next available checking account ID
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    for var in sql_var:
+        sql = "SELECT acct_id FROM accounts WHERE acct_id LIKE " + var
+        c.execute(sql)
+        list = c.fetchall()
+        new_accts.append(int((max(list))[0]) + 1)
+    return new_accts
+    conn.close()
 
 def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_id):
     conn = sqlite3.connect('bank.db') 
