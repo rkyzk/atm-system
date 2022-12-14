@@ -6,6 +6,7 @@ from datetime import datetime
 import hashlib
 import os
 import time
+from User import User
 
 def get_pin():
     """
@@ -117,6 +118,22 @@ def get_ids(code):
     acct_info.append(new_accts)
     return acct_info
 
+def print_data(user):
+    """
+    Print the information of a user.
+
+    Argument:
+    user -- User class object
+    """
+    print(f"Name: {user.fname} {user.lname}")
+    print(f"User ID: {user.user_id}")
+    print(f"Bank Name: {user.bank}")
+    print(f"Savings Account ID: {user.svg_acct_id}")
+    print(f"Checking Account ID: {user.check_acct_id}")
+    print(f"--Initial Deposits--")
+    print(f"Savings Account: ${user.svg_dp}")
+    print(f"Checking Account: ${user.check_dp} \n")
+
 print("****************************")
 print("          Hello!")
 print("****************************\n")
@@ -154,6 +171,32 @@ print(key) # remove this later
 print(salt)  # remove this later
 print(user_id)
 print(svg_acct_id, check_acct_id, bank)
+
+date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+# Store all user info into User class object "user" 
+user = User(fname, lname, holder, bank, user_id, salt, key, svg_acct_id, 
+            check_acct_id, svg_dp, check_dp, date)
+while True:
+    # Print the user information for confirmation
+    print("\n----------------------------------")
+    print("Confirm the following information")
+    print("----------------------------------")
+    print_data(user)
+    # Ask if the data can be stored as it was printed or needs to be changed.
+    print("Would you like to \na: insert the above data into DB\n"
+          "b: make changes\nc: terminate the session")
+    confirm = input("Enter 'a', 'b' or 'c': ").lower()
+    if confirm not in ['a', 'b', 'c']:
+        print("\nInvalid entry.  Please try again.")
+        time.sleep(1.5)
+        continue
+    if confirm == "a":
+        print("\nThe data will be stored into DB...")
+        break
+    if confirm == "c":
+        print("\nAre you sure you want to terminate the session?\n"
+              "All information will be lost.\n")
 
 """
 
