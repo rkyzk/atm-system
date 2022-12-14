@@ -110,12 +110,12 @@ def get_ids(code):
 
     user_id = get_user_id(code)
     new_accts = get_acct_ids(code)
+    acct_info = []
     # Store the bank name, user ID and account IDs in the list "account_info," and return the list
     acct_info.append(bank)
     acct_info.append(user_id)
     acct_info.append(new_accts)
     return acct_info
-
 
 print("****************************")
 print("          Hello!")
@@ -140,16 +140,20 @@ while True:
         break
 svg_dp = collect_val("Initial deposit in savings account")
 check_dp = collect_val("Initial deposit in checking account")
-
-# Get a pin and salt and hash the pin to get a key
+# Get user ID, account IDs and the bank name and store them in the following variables
+bank, user_id, new_accts = get_ids(code)
+svg_acct_id, check_acct_id = new_accts
+# Get a pin & salt, and then hash the pin to get a key
 salt = os.urandom(32)
 pin = get_pin()
 key = hash_pin_with_salt(pin, salt)
 # In real situations the pin will be shown only to the customer
-# but here, it will be printed so testers can use it.
+# but here, it will be printed so the program can be tested.
 print(f"Pin: {pin}")
 print(key) # remove this later
 print(salt)  # remove this later
+print(user_id)
+print(svg_acct_id, check_acct_id, bank)
 
 """
 
