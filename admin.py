@@ -5,6 +5,7 @@ import random
 from datetime import datetime
 import hashlib
 import os
+import time
 
 def get_pin():
     """
@@ -41,20 +42,55 @@ def validate_val(val):
 
 def collect_val(type_val):
     while True:
-        dp = input(f"Enter {type_val} (as integer 100 or with cents 100.00): ")
+        dp = input(f"Enter {type_val} (): ")
         if not validate_val(dp):
             print("Invalid entry.")
+            time.sleep(1.5)
         elif dp.isdigit():
             decimal_val = dp + ".00"
             return decimal_val
         else:
             return dp
 
+def validate_name(name):
+    """
+    Check if the name string contains only alphabets.
+    If so, return True, if not return False.
+
+    Argument:
+    name -- name to validate
+    """
+    letters = name.replace(" ", "")
+    if letters.isalpha():
+        return True
+    else:
+        return False
+
+"""
+Prompt the user to enter first or last name.
+Have the input validate.  If it passes the validation,
+return the input. If not prompt the user to reenter the name. 
+"""
+def collect_name(f_l_name):
+    while True:
+        name = input(f"Enter the customer's {f_l_name}: ")
+        if validate_name(name):
+            return name
+        else:
+            print("Invalid entry (enter only alphabets).")
+            time.sleep(1.5)
+
 print("****************************")
 print("          Hello!")
 print("****************************\n")
-fname = input("Enter the customer's first name: ")
-lname = input("Enter the customer's last name: ")
+print("This terminal is for creating new accounts.\n")
+time.sleep(2)
+# Collect the customer's first name and validate it
+fname = collect_name("first name")
+# Collect the customer's first name and validate it
+lname = collect_name("last name")
+# the customer's full name       
+holder = fname + " " + lname
 print("\nAt which bank are you creating accounts?")
 print("Enter 'a' for North Bank\n'b' for East Bank\n'c' for South Bank.")
 code = input("Your input: ")
