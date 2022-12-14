@@ -204,6 +204,24 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.commit()
     conn.close()
 
+sql_insert_user = "\"INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, "
+        ":key, :svg_acct_id, :check_acct_id, :flag)\", "
+        "{'fname': user.fname, 'lname': user.lname, "
+        "'bank': user.bank, 'user_id': user.user_id, "
+        "'salt': user.salt, 'key': user.key, "
+        "'svg_acct_id': user.svg_acct_id, "
+        "'check_acct_id': user.check_acct_id, 'flag': 'a'}"
+
+def sql_insert_account(acct, balance):
+    sql = "\"INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)\", "
+            "{'acct_id': user.svg_acct_id, 'user_id': user.user_id, "
+            "'holder': user.holder, 'bank': user.bank, "
+            "'acct_type': '" + acct + "', 'balance': user." + balance + "}"
+    return sql
+
+def create_new_accounts(user):
+    pass
+
 def withdraw(user_id, amount):
     pass
 

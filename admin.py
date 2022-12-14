@@ -252,11 +252,11 @@ while True:
             else:
                 break
 # call the function that inserts data into DB
-print("you got here!")
+create_new_accounts(user)
             
 """
 
-#insert a sample user
+#insert sample users
 date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 insert_user("John", "Smith", "North Bank", 100001, "salt", "key", 1100001, 120001)
