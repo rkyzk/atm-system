@@ -220,6 +220,19 @@ def create_new_accounts(new_accts_info):
     finally:
         conn.close()
 
+def get_user_info(user_id):
+    """
+    Get user Info of the given user ID
+    """
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE user_id = " + str(user_id))
+    user = c.fetchone()
+    return user
+    conn.close()
+
+def deactivate(user_id):
+    pass
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"
@@ -253,7 +266,7 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.close()
 """
 # delete_tables()
-print_tables()
+# print_tables()
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()

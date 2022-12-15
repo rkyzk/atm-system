@@ -133,7 +133,7 @@ def print_data(user):
     print(f"--Initial Deposits--")
     print(f"Savings Account: ${user.svg_dp}")
     print(f"Checking Account: ${user.check_dp} \n")
-"""
+
 print("****************************")
 print("          Hello!")
 print("****************************\n")
@@ -254,7 +254,7 @@ while True:
 # call the function that inserts data into DB
 create_new_accounts(user)
             
-"""
+
 
 #insert sample users
 date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -267,4 +267,4 @@ key = hash_pin_with_salt(pin, salt)
 # user = User("Katie", "Baker", "Katie Baker", "East Bank", 200001, salt, key, 2100001, 2200001, '1000.00', '1000.00', date)
 user = User("Jacky", "Adams", "Jacky Adams", "South Bank", 300001, salt, key, 3100001, 3200001, '1000.00', '1000.00', date)
 
-create_new_accounts(user)
+# create_new_accounts(user)

@@ -1,11 +1,48 @@
 from sql import *
+import hashlib
 
+def validate_pin(user_id, unhashed):
+    user = get_user_info(user_id)
+    salt = user[4]
+    new_key = hashlib.pbkdf2_hmac('sha256', unhashed.encode('utf-8'), salt, 100000, dklen=128)
+    if new_key == user[5]:
+        return True
+    else:
+        return False
 
-user_id = 1000001
-acct_id = 2000001
-
-
-
+# In a real setting, the user will insert their card,
+# and the machine will read off their user_ID, but here,
+# we'll have the user input their ID and pin.
+# If they get it wrong 4 times, the card will be deactivated.
+n = 0
+while n < 4:
+    user_id = input("Enter your user ID: ")
+    unhashed = input("Enter your pin: ")
+    if not user_id.isdigit():
+        print("The user ID or the pin is wrong.  Please try again.")
+        n += 1
+        continue
+    user = get_user_info(int(user_id))  # indent----------?
+    if user == None:
+        print("The user ID or the pin is wrong.  Please try again.")
+        n += 1
+        continue
+    # if the card has been deactivated (then it has a flag value of "s" in Table Users.)
+    # tell the user to call personnel.
+    if user[8] == "s":
+        print("Your card has been suspended.\nPlease call "
+              "the number on the back of your card for assistance.")
+        exit()
+    else:        
+        if validate_pin(user_id, unhashed):
+            print('\nLogin Success\n')
+            break
+else:
+    # After 4 wrong entries, block further login attempt by changing the flag to 's' in DB
+    deactivate(user_id)
+    print("The card has been deactivated. Please call the number\
+        on the back of your card for assistance.")
+    exit()
 
 print("*****************")
 print(f"     Hello!")
