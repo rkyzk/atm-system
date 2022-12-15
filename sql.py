@@ -232,7 +232,16 @@ def get_user_info(user_id):
     conn.close()
 
 def deactivate(user_id):
-    pass
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        c.execute("UPDATE Users SET flag = 's' WHERE user_id = "   
+                  + str(user_id))     # rollback needed?
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"

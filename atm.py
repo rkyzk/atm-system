@@ -33,12 +33,15 @@ while n < 4:
         print("Your card has been suspended.\nPlease call "
               "the number on the back of your card for assistance.")
         exit()
-    else:        
-        if validate_pin(user_id, unhashed):
-            print('\nLogin Success\n')
-            break
+    elif validate_pin(user_id, unhashed):
+        print('\nLogin Success\n')
+        break
+    else: 
+        print("The user ID or the pin is wrong.  Please try again.")
+        n += 1
+        continue   # 4th time ----??
 else:
-    # After 4 wrong entries, block further login attempt by changing the flag to 's' in DB
+    # After 4 wrong entries, block further login attempts by changing the flag to 's' in DB
     deactivate(user_id)
     print("The card has been deactivated. Please call the number\
         on the back of your card for assistance.")
