@@ -18,10 +18,6 @@ n = 0
 while n < 4:
     user_id = input("Enter your user ID: ")
     unhashed = input("Enter your pin: ")
-    if not user_id.isdigit():
-        print("The user ID or the pin is wrong.  Please try again.")
-        n += 1
-        continue
     user = get_user_info(int(user_id))  # indent----------?
     if user == None:
         print("The user ID or the pin is wrong.  Please try again.")
@@ -36,13 +32,12 @@ while n < 4:
     elif validate_pin(user_id, unhashed):
         print('\nLogin Success\n')
         break
-    else: 
+    else:
         print("The user ID or the pin is wrong.  Please try again.")
         n += 1
-        continue   # 4th time ----??
 else:
     # After 4 wrong entries, block further login attempts by changing the flag to 's' in DB
-    deactivate(user_id)
+    deactivate(user_id)   # (user)id can't be empty
     print("The card has been deactivated. Please call the number\
         on the back of your card for assistance.")
     exit()

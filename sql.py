@@ -235,13 +235,30 @@ def deactivate(user_id):
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
+        print(user_id)
         c.execute("UPDATE Users SET flag = 's' WHERE user_id = "   
-                  + str(user_id))     # rollback needed?
+                  + str(user_id))
     except Exception as e:
         print(e)
     finally:
         conn.close()
 
+
+def activate(user_id):
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        with conn:
+            c.execute("UPDATE users SET flag = 'a' WHERE user_id = " 
+                    + str(user_id))
+            message = "The card has been activated."
+            return message
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
+
+print_tables()
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"
