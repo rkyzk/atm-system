@@ -170,17 +170,65 @@ def get_acct_ids(code):
         c.execute(sql)
         list = c.fetchall()
         new_accts.append(int((max(list))[0]) + 1)
-    return new_accts
     conn.close()
+    return new_accts
+    
+def create_new_accounts(new_accts_info):
+    try:
+        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        c = conn.cursor()
+        c.execute('Begin')
+        # insert user information to table "Users"
+        c.execute("INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, "
+                    ":key, :svg_acct_id, :check_acct_id, :flag)",
+                  {'fname': new_accts_info.fname, 'lname': new_accts_info.lname,
+                   'bank': new_accts_info.bank, 'user_id': new_accts_info.user_id,
+                   'salt': new_accts_info.salt, 'key': new_accts_info.key,
+                   'svg_acct_id': new_accts_info.svg_acct_id,
+                   'check_acct_id': new_accts_info.check_acct_id, 'flag': 'a'})
+        # insert savings account into table "Accounts"
+        c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
+                  {'acct_id': new_accts_info.svg_acct_id, 'user_id': new_accts_info.user_id,
+                   'holder': new_accts_info.holder, 'bank': new_accts_info.bank,
+                   'acct_type': "savings", 'balance': new_accts_info.svg_dp})
+        # insert checking account into table "Accounts"
+        c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
+                  {'acct_id': new_accts_info.check_acct_id, 'user_id': new_accts_info.user_id,
+                   'holder': new_accts_info.holder, 'bank': new_accts_info.bank,
+                   'acct_type': "checking", 'balance': new_accts_info.check_dp})
+        # insert the record of initial deposit to savings account into table "Transactions"
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from,"
+        " :trs_notes, :amt_with_sign, :date)",
+        {'acct_id': new_accts_info.svg_acct_id, 'user_id': new_accts_info.user_id,
+         'trs_type': "deposit", 'trs_to_or_from': "NA",
+         'trs_notes': "initial deposit", 'amt_with_sign': "+" + new_accts_info.svg_dp,
+         'date': new_accts_info.date})
+        # insert the record of initial deposit to checking account into table "Transactions"
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from,"
+                  " :trs_notes, :amt_with_sign, :date)",
+                  {'acct_id': new_accts_info.check_acct_id, 'user_id': new_accts_info.user_id,
+                   'trs_type': "deposit", 'trs_to_or_from': "NA",
+                   'trs_notes': "initial deposit", 'amt_with_sign': "+" + new_accts_info.check_dp,
+                   'date': new_accts_info.date})
+        conn.commit()
+        print("The data have been stored in the database.")
+    except Exception as e:
+        print("There was an error. The data hasn't been inserted. Please try again.")
+        print(e)
+        if conn:
+            conn.rollback()
+    finally:
+        conn.close()
+
+"""
+sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
+sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"
 
 def insert_user(fname, lname, bank, user_id, salt, key, svg_acct_id, check_acct_id):
+    global sql_insert_user
     conn = sqlite3.connect('bank.db') 
     c = conn.cursor()
-    c.execute("INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id," 
-     + ":salt, :key, :svg_acct_id, :check_acct_id, :flag)",
-        {'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id,
-        'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id,
-        'check_acct_id': check_acct_id, 'flag': 'a'})
+    c.execute(sql_user_1, sql_user_2)
     conn.commit()
     conn.close()
 
@@ -203,60 +251,9 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
                    'trs_notes': trs_notes, 'amount': "+" + amount, 'date': date})
     conn.commit()
     conn.close()
-
-def sql_insert_user(fname, :lname, :bank, :user_id, :salt, "
-        ":key, :svg_acct_id, :check_acct_id, :flag)
-sql_insert_user = "\"INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, "
-        ":key, :svg_acct_id, :check_acct_id, :flag)\", "
-        "{'fname': user.fname, 'lname': user.lname, "
-        "'bank': user.bank, 'user_id': user.user_id, "
-        "'salt': user.salt, 'key': user.key, "
-        "'svg_acct_id': user.svg_acct_id, "
-        "'check_acct_id': user.check_acct_id, 'flag': 'a'}"
-
-def sql_insert_account(acct_id, user_id, holder, bank, acct_type, balance):
-    sql = "\"INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)\", "
-            "{'acct_id': " + acct_id + " 'user_id': " + user_id 
-            + " 'holder': " + holder + " 'bank': " + bank 
-            + " 'acct_type': " + acct_type + " 'balance': " + balance + "}"
-    return sql
-
-def sql_insert_transactions(acct_id, user_id, trs_type, trs_to_or_from,
-        trs_notes, amount, date):
-    sql = "\"INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from, "
-        ":trs_notes, :amount, :date)\", "
-        "{'acct_id': " + acct_id + ", 'user_id': " + user_id 
-        + "'trs_type': " + trs_type + ", 'trs_to_or_from': " + trs_to_or_from
-        + "'trs_notes': " + trs_notes + ", 'amount': " + amount
-        + "'date': " + date + "}"
-
-def create_new_accounts(user):
-    pass
-
-def withdraw(user_id, amount):
-    pass
-
-def deposit(amount, acct_id):
-    pass
-
-def transfer(user_id, amount, recip_acct_id, trs_notes):
-    pass
-
-def display_balance(user_id):
-    pass
-
-def display_transactions(user_id):
-    pass
-
-
-# create_table_users()
-# create_table_accounts()
-# create_table_transactions()
+"""
 # delete_tables()
-# print_tables()
-
-
-
-
-
-
+print_tables()
+#create_table_users()
+#create_table_accounts()
+#create_table_transactions()
