@@ -204,6 +204,8 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.commit()
     conn.close()
 
+def sql_insert_user(fname, :lname, :bank, :user_id, :salt, "
+        ":key, :svg_acct_id, :check_acct_id, :flag)
 sql_insert_user = "\"INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, "
         ":key, :svg_acct_id, :check_acct_id, :flag)\", "
         "{'fname': user.fname, 'lname': user.lname, "
@@ -212,12 +214,21 @@ sql_insert_user = "\"INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, 
         "'svg_acct_id': user.svg_acct_id, "
         "'check_acct_id': user.check_acct_id, 'flag': 'a'}"
 
-def sql_insert_account(acct, balance):
+def sql_insert_account(acct_id, user_id, holder, bank, acct_type, balance):
     sql = "\"INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)\", "
-            "{'acct_id': user.svg_acct_id, 'user_id': user.user_id, "
-            "'holder': user.holder, 'bank': user.bank, "
-            "'acct_type': '" + acct + "', 'balance': user." + balance + "}"
+            "{'acct_id': " + acct_id + " 'user_id': " + user_id 
+            + " 'holder': " + holder + " 'bank': " + bank 
+            + " 'acct_type': " + acct_type + " 'balance': " + balance + "}"
     return sql
+
+def sql_insert_transactions(acct_id, user_id, trs_type, trs_to_or_from,
+        trs_notes, amount, date):
+    sql = "\"INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from, "
+        ":trs_notes, :amount, :date)\", "
+        "{'acct_id': " + acct_id + ", 'user_id': " + user_id 
+        + "'trs_type': " + trs_type + ", 'trs_to_or_from': " + trs_to_or_from
+        + "'trs_notes': " + trs_notes + ", 'amount': " + amount
+        + "'date': " + date + "}"
 
 def create_new_accounts(user):
     pass
