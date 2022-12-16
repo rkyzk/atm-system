@@ -44,7 +44,6 @@ def get_number(msg):
         else:
             return num
 
-
 # In a real setting, the user will insert their card,
 # and the machine will read off their user_ID, but here,
 # we'll have the user input their ID and pin.
@@ -100,7 +99,6 @@ while True:
             amount = collect_val('Enter the amount you wish to withdraw: ')
             print(amount)
             withdraw(amount, check_acct_id, user_id)
-            print("Please take the money and your card.")
             break
         if choice == "b":
             # In real cases the user will insert money, and the machine will count the inserted money,
