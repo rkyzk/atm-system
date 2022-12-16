@@ -230,7 +230,7 @@ while True:
     while True:
         choice = input("Do you wish to make further transactions? (y/n): ").lower()
         if choice == "n":
-            print("Bye.  Have a nice day!")
+            print("Thank you.  Have a nice day!")
             exit()
         elif choice == "y":
             break
