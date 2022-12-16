@@ -44,6 +44,19 @@ def get_number(msg):
         else:
             return num
 
+def print_row(list):
+    for item in list:
+        display_with_spaces(item)
+
+def display_with_spaces(list):
+    list_num = [32, 22, 32, 20, 10]
+    str = ""
+    for n, item in enumerate(list):
+        space = " "
+        num = list_num[n] - len(item)
+        str += item + space * num
+    print(str)
+
 # In a real setting, the user will insert his/her card,
 # and the machine will read off thire user_ID, 
 # so there's no need to validate the IDs. 
@@ -184,20 +197,42 @@ while True:
             break
         if choice == "e":
             list = display_transactions(user_id)
-            print(list)
+            svg_list = []
+            check_list = []
+            for item in list:
+                if str(item[0])[1] == "1":
+                    list = []
+                    for n in range(1, 6):
+                        list.append(item[n])
+                    svg_list.append(list)
+                else:
+                    list = []
+                    for n in range(1, 6):
+                        list.append(item[n])
+                    check_list.append(list)
+
+            headings = ["Date", "Transaction type", "Transfer to/from", "Transfer notes",
+                        "Amount"]
+            print("========================================================================")
+            print("***Savings account transactions\n")
+            display_with_spaces(headings)
+            print_row(svg_list)
+            print("========================================================================")
+            print("***Checking account transactions\n")
+            display_with_spaces(headings)
+            print_row(check_list)
             break
         if choice == "f":
-            print("Have a nice day!")
+            print("Bye.  Have a nice day!")
             exit()
         else:
-            print("Invalid entry.")
+            print('Invalid entry.  Please try again.')  
     while True:
-        choice = input("Do you wish to make further transactions? (y/n): ")
+        choice = input("Do you wish to make further transactions? (y/n): ").lower()
         if choice == "n":
-            print("Thank you.  Have a nice day!")
+            print("Bye.  Have a nice day!")
             exit()
         elif choice == "y":
             break
         else:
-            print("Invalid entry.")
-    
+            print("Invalid entry.  Please enter 'y' or 'n'")

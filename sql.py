@@ -1,8 +1,7 @@
 import sqlite3
 import decimal
 D=decimal.Decimal
-
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def adapt_decimal(d):
     return str(d)
@@ -403,6 +402,17 @@ def display_balance(user_id):
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
     c.execute("SELECT acct_id, balance FROM accounts WHERE user_id = " + str(user_id))
+    list = c.fetchall()
+    return list
+    conn.close()
+
+def display_transactions(user_id):
+    start_datetime = datetime.now() - timedelta(days = 30)
+    start_date_str = start_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    c.execute("SELECT acct_id, date, trs_type, trs_to_or_from, trs_notes, amount "
+              "FROM Transactions WHERE user_id = " + str(user_id) + " AND date >= '" + start_date_str + "'")
     list = c.fetchall()
     return list
     conn.close()
