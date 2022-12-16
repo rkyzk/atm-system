@@ -97,7 +97,8 @@ def print_with_linebreaks(list):
 def print_tables():
     conn = sqlite3.connect('bank.db')  
     c = conn.cursor()
-    c.execute("""SELECT * FROM Users""")
+    c.execute("""SELECT fname, lname, bank, user_id, svg_acct_id,
+        check_acct_id, flag FROM Users""")
     print("Users")
     print_with_linebreaks(c.fetchall())
     c.execute("""SELECT * FROM Accounts""")
@@ -111,13 +112,19 @@ def print_tables():
     conn.close()
 
 def delete_tables():
-    conn = sqlite3.connect('bank.db')
-    c = conn.cursor()
-    with conn:
-        c.execute("""DROP TABLE Users""")
-        c.execute("""DROP TABLE Accounts""")
-        c.execute("""DROP TABLE Transactions""")
-    conn.close()
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        with conn:
+            c.execute("""DROP TABLE Users""")
+            c.execute("""DROP TABLE Accounts""")
+            c.execute("""DROP TABLE Transactions""")
+    except Exception as e:
+        print("There was an error with the system."
+            "The tables weren't deleted.")
+        print(e)
+    finally:
+        conn.close()
 
 def get_user_id(code):
     """
@@ -235,10 +242,33 @@ def deactivate(user_id):
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
-        print(user_id)
-        c.execute("UPDATE Users SET flag = 's' WHERE user_id = "   
-                  + str(user_id))
+        # c.execute("UPDATE Users SET flag = 's' WHERE user_id = " 
+        #    + str(user_id))
+        print("UPDATE Users SET flag = 's' WHERE user_id = " + str(user_id))
+        conn.commit()
+        print("The card has been deactivated. Please call the number "
+                "on the back of your card for assistance.")
     except Exception as e:
+        if conn:
+            conn.rollback()
+        print("There was an error with the system.")
+        print(e)
+    finally:
+        conn.close()
+
+def activate(user_id):
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        c.execute('Begin')
+        c.execute("UPDATE users SET flag = 'a' WHERE user_id = "
+             + str(user_id))
+        conn.commit()
+        message = "The card has been activated."
+        return message
+    except Exception as e:
+        conn.rollback()
+        print("There was an error.  The user card couldn't be activated.")
         print(e)
     finally:
         conn.close()
@@ -301,21 +331,17 @@ def deposit(amount, check_acct_id, user_id):
     finally:
         conn.close()
 
-def activate(user_id):
-    try:
-        conn = sqlite3.connect('bank.db')
-        c = conn.cursor()
-        with conn:
-            c.execute("UPDATE users SET flag = 'a' WHERE user_id = " 
-                    + str(user_id))
-            message = "The card has been activated."
-            return message
-    except Exception as e:
-        print(e)
-    finally:
-        conn.close()
+def get_recip_info(recip_acct_num):
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    # Get the recipient's name from accounts
+    c.execute("SELECT user_id, holder FROM accounts WHERE acct_id = " + str(recip_acct_num))
+    recip = c.fetchone()
+    conn.close()
+    return recip
 
-# print_tables()
+activate(100001)
+print_tables()
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"
@@ -349,7 +375,7 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.close()
 """
 # delete_tables()
-print_tables()
+# print_tables()
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()
