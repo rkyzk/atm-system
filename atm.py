@@ -177,7 +177,10 @@ while True:
             break
         if choice == "d":
             list = display_balance(user_id)
-            print(list)
+            print(f"\nYour savings account ID: {list[0][0]}")
+            print(f"Balance: {list[0][1]}")
+            print(f"\nYour checking account ID: {list[1][0]}")
+            print(f"Balance: {list[1][1]}\n")
             break
         if choice == "e":
             list = display_transactions(user_id)
@@ -197,3 +200,4 @@ while True:
             break
         else:
             print("Invalid entry.")
+    

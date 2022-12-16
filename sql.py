@@ -399,7 +399,13 @@ def transfer(name, user_id, acct_id, amount, recip, recip_id, trs_notes, recip_a
     finally:
         conn.close()
 
-
+def display_balance(user_id):
+    conn = sqlite3.connect('bank.db')
+    c = conn.cursor()
+    c.execute("SELECT acct_id, balance FROM accounts WHERE user_id = " + str(user_id))
+    list = c.fetchall()
+    return list
+    conn.close()
 
 print_tables()
 """
