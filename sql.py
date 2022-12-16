@@ -244,7 +244,7 @@ def deactivate(user_id):
         c = conn.cursor()
         # c.execute("UPDATE Users SET flag = 's' WHERE user_id = " 
         #    + str(user_id))
-        print("UPDATE Users SET flag = 's' WHERE user_id = " + str(user_id))
+        c.execute("UPDATE Users SET flag = 's' WHERE user_id = " + str(user_id))
         conn.commit()
         print("The card has been deactivated. Please call the number "
                 "on the back of your card for assistance.")
@@ -311,6 +311,7 @@ def deposit(amount, check_acct_id, user_id):
         c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
         old_balance = c.fetchone()
         new_balance = D(old_balance[0]) + D(amount)
+        print(str(new_balance))
         c.execute('Begin')
         c.execute("UPDATE accounts SET balance = " + str(new_balance)
                   + " WHERE acct_id = " + str(check_acct_id))
@@ -340,7 +341,66 @@ def get_recip_info(recip_acct_num):
     conn.close()
     return recip
 
-activate(100001)
+def transfer(name, user_id, acct_id, amount, recip, recip_id, trs_notes, recip_acct_num):
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        # Get the balance of the sender
+        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(acct_id))
+        old_balance = c.fetchone()
+        # Check if the sender has sufficient money for the transfer
+        if D(old_balance[0]) < D(amount):
+            print("Not sufficient amount of money in your account.\n"
+                + "The transfer can't be made."
+                + "The program will be terminated.")
+            exit()
+        else:
+            new_balance = D(old_balance[0]) - D(amount)
+            print(new_balance)
+            c.execute('Begin')
+            # update the sender's new balance
+            c.execute("UPDATE accounts SET balance = " + str(new_balance)
+                        + " WHERE acct_id = " + str(acct_id))
+            # Add to the transaction history
+            trs_type = "transfer sent"
+            trs_to_or_from = "transfer to " + recip
+            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+                      " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
+                      {'acct_id': acct_id, 'user_id': user_id, 'trs_type': trs_type,
+                       'trs_to_or_from': trs_to_or_from, 'trs_notes': trs_notes,
+                       'amount': "-" + str(amount), 'date': date})
+
+            # Get the balance of the recipient
+            acct_id = recip_acct_num
+            c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(acct_id))
+            old_balance = c.fetchone()
+            # Calculate the new balance of the recipient
+            new_balance = D(old_balance[0]) + D(amount)
+            # Update the recipient's new balance
+            c.execute("UPDATE accounts SET balance = " + str(new_balance)
+                + " WHERE acct_id = " + str(acct_id))
+            # Add to the transaction history
+            trs_type = "transfer received"
+            trs_to_or_from = "transfer from " + name
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+                      " :trs_type, :trs_to_or_from, :trs_notes, :amt_with_sign, :date)",
+                      {'acct_id': acct_id, 'user_id': user_id, 'trs_type': trs_type,
+                       'trs_to_or_from': trs_to_or_from, 'trs_notes': "NA",
+                       'amt_with_sign': "+" + str(amount), 'date': date})
+            conn.commit()
+            print("The money has been transferred.")
+    except Exception as e:
+        print("There was an error.  Transfer is not possible at this time.  Please try again.")
+        print(e)
+        if conn:
+            conn.rollback()
+        exit()
+    finally:
+        conn.close()
+
+
+
 print_tables()
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"

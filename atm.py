@@ -40,7 +40,7 @@ def get_number(msg):
     while True:
         num = input(msg)
         if not num.isdigit():
-            print("Please enter a valid.")
+            print("Please enter a valid ID.")
         else:
             return num
 
@@ -71,29 +71,28 @@ while True:
 # if the card has been deactivated (if it has a flag value of "s" in Table Users.)
 # tell the user to call personnel.
 if user[8] == "s":
-    print("Your card has been suspended.\nPlease call "
+    print("\nYour card has been suspended.\nPlease call "
         "the number on the back of your card for assistance.")
     exit()
 # Let the user input their pin.  If they get it wrong 4 times,
 # the card will be deactivated (the flag of the user info in DB
-# will be set to "s" for "suspend.")
+# will be set to "s" ("s "for "suspended.")
 n = 0  # index for the loop
 while n < 4:
-        unhashed = input('Enter your pin: ')
-        if validate_pin(user_id, unhashed):
-            print('\nLogin Success\n')
-            break
-        else:
-            print("The pin is wrong.  Please try again.")
-            n += 1
-            continue
-else:
-    # After 4 wrong entries, block further login attempts by changing the flag to 's' in DB
-    print("you're here")
-    deactivate(user_id)
-    exit()
+    unhashed = input('Enter your pin: ')
+    if validate_pin(user_id, unhashed):
+        print('\nLogin Success\n')
+        break
+    if n < 3:
+        print("The pin is wrong.  Please try again.")
+        n += 1
+        continue
+    else:
+        print("\nLogin failed 4 times.")
+        # After 4 wrong entries, block further login attempts by changing the flag to 's' in DB
+        deactivate(user_id)
+        exit()
 
-"""
 # Set values in User class object user and the current date into variables
 name = user[0] + " " + user[1]
 svg_acct_id = user[6]
@@ -121,63 +120,60 @@ while True:
             # In real cases the user will insert money, and the machine will count the value,
             # but in this program, let the user enter the amount he/she deposits.
             amount = collect_val('Enter the amount of money you are depositing: ')
-            print(amount)
             deposit(amount, check_acct_id, user_id)
             break
         if choice == "c":
             while True:
                 option = input("\nDo you wish to make a transfer from your savings account,\n"
-                               "or from your checking account?  Enter 'a' for savings account\n"
+                               "or from your checking account?\nEnter 'a' for savings account\n"
                                "'b' for checking account: ").lower()
                 if option == 'a':
                     acct_id = svg_acct_id
                 elif option == 'b':
                     acct_id = check_acct_id
                 else:
-                    print("Invalid entry.  Enter 'a' or 'b'.")
+                    print("\nInvalid entry.  Enter 'a' or 'b'.")
                     continue
                 while True:
-                    recip_acct_num = get_number("Enter the recipient's account number: ")
+                    recip_acct_num = get_number("\nEnter the recipient's account number: ")
                     list_recip_info = get_recip_info(recip_acct_num)
                     if int(recip_acct_num) == acct_id:
-                        print("You entered the ID of the account from which you wish to"
-                              "make a transfer.  Please enter an account ID to which "
-                              "you will transfer money.")
+                        print("\nYou entered the ID of the account from which you wish to "
+                              "make a transfer.\nPlease enter an account ID of "
+                              "the recipient.")
                         continue
                     elif list_recip_info == None:                # can I put 121 right before this line?
-                        print(f"The given account ID {recip_acct_num} is not valid.")
+                        print(f"\nThe given account ID {recip_acct_num} is not valid.")
                         while True:
-                            option = input("Enter 'a' to abort the transaction, 'b' to continue: ").lower()
+                            option = input("\nEnter 'a' to abort the transaction, "
+                                "'b' to continue: ").lower()
                             if option == "a":
                                 exit()
                             elif option == "b":
                                 break
                             else:
-                                "Invalid entry."
+                                "\nInvalid entry."
                         continue
                     else:
-                        amount = get_number("The amount to transfer: ")
-                        trs_notes = input("Enter transactions notes(optional): ")
+                        amount = collect_val("the amount you will transfer: ")
+                        trs_notes = input("\nEnter transactions notes(optional): ")
                         recip_id, recip = list_recip_info
-                        print(f"You wish to transfer ${amount} to \n{recip} \n"
+                        print(f"\nYou wish to transfer ${amount} to \n{recip}\n"
                               f"Account ID: {recip_acct_num}")
                     while True:
-                        option = input("Enter 'y' to proceed with this transfer \n"
-                                       "or enter 'n' to make changes: ").lower()
-                        if option in ["y", "n"]:
+                        option = input("\nEnter 'a' to proceed with this transfer,\n"
+                                       "or enter 'b' to make changes: ").lower()
+                        if option in ["a", "b"]:
                             break
                         else:
                             print("Invalid entry.")
-                    if option == "y":
+                    if option == "a":
                         break
-                    if option == "n":
+                    if option == "b":
                         continue
-                boo = transfer(name, user_id, check_acct_id, int(amount), recip,
-                         recip_id, recip_acct_num, trs_notes, date)
-                if boo == False:
-                    exit()
-                else:
-                    break
+                transfer(name, user_id, acct_id, amount, recip,
+                    recip_id, trs_notes, recip_acct_num)
+                break
             break
         if choice == "d":
             list = display_balance(user_id)
@@ -201,4 +197,3 @@ while True:
             break
         else:
             print("Invalid entry.")
-"""
