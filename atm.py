@@ -97,17 +97,15 @@ while True:
         choice = input('Enter a-f: ').lower()
         if choice == "a":
             amount = collect_val('Enter the amount you wish to withdraw: ')
-            print(amount)
             withdraw(amount, check_acct_id, user_id)
             break
         if choice == "b":
-            # In real cases the user will insert money, and the machine will count the inserted money,
-            # but here, let the user enter the deposit amount.
-            amount = get_number('Enter the amount of money you are depositing: ')
-            deposit(int(amount), check_acct_id, user_id)
-            print(f"${amount} was depositted to your account.")
+            # In real cases the user will insert money, and the machine will count the value,
+            # but in this program, let the user enter the amount he/she deposits.
+            amount = collect_val('Enter the amount of money you are depositing: ')
+            print(amount)
+            deposit(amount, check_acct_id, user_id)
             break
-        
         if choice == "d":
             list = display_balance(user_id)
             print(list)

@@ -245,7 +245,7 @@ def deactivate(user_id):
 
 def withdraw(amount, check_acct_id, user_id):
     try:
-        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
         old_balance = c.fetchone()
@@ -273,6 +273,33 @@ def withdraw(amount, check_acct_id, user_id):
         exit()
     finally:
         conn.close()   
+
+def deposit(amount, check_acct_id, user_id):
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
+        old_balance = c.fetchone()
+        new_balance = D(old_balance[0]) + D(amount)
+        c.execute('Begin')
+        c.execute("UPDATE accounts SET balance = " + str(new_balance)
+                  + " WHERE acct_id = " + str(check_acct_id))
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+                  " :trs_type, :trs_to_or_from, :trs_notes, :amt_with_sign, :date)",
+                  {'acct_id': check_acct_id, 'user_id': user_id, 'trs_type': "deposit",
+                   'trs_to_or_from': "NA", 'trs_notes': "NA",
+                   'amt_with_sign': "+" + str(amount), 'date': date})
+        conn.commit()
+        print(f"{amount} was added to your checking account.")
+    except Exception as e:
+        print("There was an error.  Deposit is not possible at this time.  Please try again.")
+        print(e)
+        if conn:
+            conn.rollback()
+        exit()
+    finally:
+        conn.close()
 
 def activate(user_id):
     try:
@@ -322,7 +349,7 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.close()
 """
 # delete_tables()
-# print_tables()
+print_tables()
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()
