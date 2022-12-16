@@ -243,7 +243,37 @@ def deactivate(user_id):
     finally:
         conn.close()
 
-
+def withdraw(amount, check_acct_id, user_id):
+    try:
+        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        c = conn.cursor()
+        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
+        old_balance = c.fetchone()
+        new_blc = int(old_balance[0]) - amount
+        if new_blc < 0:
+            print("Not sufficient amount of money in the account.")
+        else:
+            c.execute('Begin')
+            c.execute("UPDATE accounts SET balance = " + str(new_blc)
+                      + " WHERE acct_id = " + str(check_acct_id))
+            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+                      " :trs_type, :trs_to_or_from, :trs_notes, :amt_with_sign, :date)",
+                  {'acct_id': check_acct_id, 'user_id': user_id, 'trs_type': "withdrawal",
+                   'trs_to_or_from': "NA", 'trs_notes': "NA",
+                   'amt_with_sign': "-" + str(amount), 'date': date})
+            conn.commit()
+            print(f"{amount} has been withdrawn from your checking account."
+                  f"\nPlease take your money and card.")
+    except Exception as e:
+        print("There was an error.  Withdrawal is not possible at this time.  Please try again.")
+        print(e)
+        if conn:
+            conn.rollback()
+        exit()
+    finally:
+        conn.close()
+        
 def activate(user_id):
     try:
         conn = sqlite3.connect('bank.db')
@@ -258,7 +288,7 @@ def activate(user_id):
     finally:
         conn.close()
 
-print_tables()
+# print_tables()
 """
 sql_user_1 = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 sql_user_2 = "{'fname': fname, 'lname': lname, 'bank': bank, 'user_id': user_id, 'salt': salt, 'key': key, 'svg_acct_id': svg_acct_id, 'check_acct_id': check_acct_id, 'flag': 'a'}"

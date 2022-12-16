@@ -1,6 +1,28 @@
 from sql import *
 import hashlib
 
+def validate_val(val):
+    if val.isdigit():
+        return True
+    elif len(val) < 4:
+        return False 
+    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
+        return True
+    else:
+        return False
+
+def collect_val(type_val):
+    while True:
+        dp = input(f"Enter {type_val} (): ")
+        if not validate_val(dp):
+            print("Invalid entry.")
+            time.sleep(1.5)
+        elif dp.isdigit():
+            decimal_val = dp + ".00"
+            return decimal_val
+        else:
+            return dp
+
 def validate_pin(user_id, unhashed):
     user = get_user_info(user_id)
     salt = user[4]
@@ -9,6 +31,19 @@ def validate_pin(user_id, unhashed):
         return True
     else:
         return False
+
+def get_number(msg):
+    """
+    Validate if the input is a number.  If so, return the number.
+    If not, prompt the user to enter a number.
+    """
+    while True:
+        num = input(msg)
+        if not num.isdigit():
+            print("Please enter a number.")
+        else:
+            return num
+
 
 # In a real setting, the user will insert their card,
 # and the machine will read off their user_ID, but here,
@@ -42,6 +77,12 @@ else:
         on the back of your card for assistance.")
     exit()
 
+# Set values in User class object user and the current date into variables
+name = user[0] + " " + user[1]
+svg_acct_id = user[6]
+check_acct_id = user[7]
+date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
 print("*****************")
 print(f"     Hello!")
 print("*****************")
@@ -56,24 +97,19 @@ while True:
     while True:
         choice = input('Enter a-f: ').lower()
         if choice == "a":
-            amount = input('Enter the amount you wish to withdraw: ')
-            withdraw(user_id, amount)
+            amount = collect_val('Enter the amount you wish to withdraw: ')
+            print(amount)
+            withdraw(amount, check_acct_id, user_id)
             print("Please take the money and your card.")
             break
         if choice == "b":
-            # In real settings the user will insert money, and the machine will
-            # count the inserted money, but here, let the user enter the deposit value.
-            amount = input('Enter the amount of money you are depositing: ')
-            deposit(amount, acct_id)
+            # In real cases the user will insert money, and the machine will count the inserted money,
+            # but here, let the user enter the deposit amount.
+            amount = get_number('Enter the amount of money you are depositing: ')
+            deposit(int(amount), check_acct_id, user_id)
             print(f"${amount} was depositted to your account.")
             break
-        if choice == "c":
-            recip_acct_id = input("Enter the recipient's account number: ")
-            amount = input("The amount to transfer: ")
-            trs_notes = input("Enter transactions notes(optional): ")
-            transfer(user_id, amount, recip_acct_id, trs_notes)
-            print(f"${amount} was transferred to {recip_acct_id}.")
-            break
+        
         if choice == "d":
             list = display_balance(user_id)
             print(list)
