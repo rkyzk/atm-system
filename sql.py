@@ -345,9 +345,7 @@ def transfer(name, user_id, acct_id, acct_type, amount, recip, recip_user_id, tr
             c.execute('Begin')
             # update the sender's new balance
             c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
-                        + "' WHERE acct_id = " + str(acct_id))
-            print("UPDATE Accounts SET balance = '" + str(new_balance)
-                        + "' WHERE acct_id = " + str(acct_id))          
+                        + "' WHERE acct_id = " + str(acct_id))        
             # Add to the transaction history
             trs_type = "transfer sent"
             trs_to_or_from = "transfer to " + recip
@@ -358,7 +356,6 @@ def transfer(name, user_id, acct_id, acct_type, amount, recip, recip_user_id, tr
                        'trs_to_or_from': trs_to_or_from, 'trs_notes': trs_notes,
                        'amount': "-" + amount, 'date': date})
             # Get the balance of the recipient
-            print(recip_acct_id)
             if str(acct_id)[1] == "1":
                 acct_type = "saving"
             else:
@@ -369,8 +366,6 @@ def transfer(name, user_id, acct_id, acct_type, amount, recip, recip_user_id, tr
             new_balance = D(old_balance[0]) + D(amount)
             # Update the recipient's new balance
             c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
-                + "' WHERE acct_id = " + str(recip_acct_id))
-            print("UPDATE Accounts SET balance = '" + str(new_balance)
                 + "' WHERE acct_id = " + str(recip_acct_id))
             # Add to the transaction history
             trs_type = "transfer received"
@@ -391,7 +386,7 @@ def transfer(name, user_id, acct_id, acct_type, amount, recip, recip_user_id, tr
     finally:
         conn.close()
 
-def get_balance(user_id):
+def get_balances(user_id):
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
     c.execute("SELECT acct_id, balance FROM Accounts WHERE user_id = " + str(user_id))
@@ -399,7 +394,7 @@ def get_balance(user_id):
     return list
     conn.close()
 
-def display_transactions(user_id):
+def get_transactions(user_id):
     start_datetime = datetime.now() - timedelta(days = 30)
     start_date_str = start_datetime.strftime("%Y-%m-%d %H:%M:%S")
     conn = sqlite3.connect('bank.db')
@@ -438,7 +433,7 @@ def update():
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()
-print_tables()
+#print_tables()
 """
 num = D('3.00')
 num_2 = D('2.00')
