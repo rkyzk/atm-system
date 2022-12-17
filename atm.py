@@ -179,7 +179,7 @@ while True:
                         if option in ["a", "b"]:
                             break
                         else:
-                            print("Invalid entry.")
+                            print("\nInvalid entry.")
                     if option == "a":
                         break
                     if option == "b":
