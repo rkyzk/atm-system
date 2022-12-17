@@ -308,7 +308,7 @@ def deposit(amount, check_acct_id, user_id):
                    'trs_to_or_from': "NA", 'trs_notes': "NA",
                    'amount': "+" + amount, 'date': date})
         conn.commit()
-        print(f"{amount} was added to your checking account.")
+        print(f"${amount} has been added to your checking account.")
     except Exception as e:
         print("There was an error.  Deposit is not possible at this time.  Please try again.")
         print(e)
@@ -371,7 +371,7 @@ def transfer(name, user_id, acct_id, amount, recip, recip_id, trs_notes, recip_a
             c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
                       " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
                       {'acct_id': acct_id, 'user_id': user_id, 'trs_type': trs_type,
-                       'trs_to_or_from': trs_to_or_from, 'trs_notes': "NA",
+                       'trs_to_or_from': trs_to_or_from, 'trs_notes': trs_notes,
                        'amount': "+" + amount, 'date': date})
             conn.commit()
             print("\nThe money has been transferred.")
@@ -426,7 +426,7 @@ def update():
 
 # withdraw("10.00", 2200001, 200001)
 # update()
-#print_tables()
+print_tables()
 """
 num = D('3.00')
 num_2 = D('2.00')

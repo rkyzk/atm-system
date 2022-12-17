@@ -1,7 +1,7 @@
 from sql import *
 import hashlib
 
-def validate_val_transfer(val):
+def validate_transfer_val(val):
     if val in ["0", "0.00"]:
         return False
     if val.isdigit(): 
@@ -12,11 +12,11 @@ def validate_val_transfer(val):
         return True
     else:
         return False
-"""
-def collect_val_transfer(msg):
+
+def collect_transfer_val(msg):
     while True:
         value = input(msg)
-        if not validate_val(value):
+        if not validate_transfer_val(value):
             print("Invalid entry. Enter values with or without number of cents (e.g. '50' or '50.00').")
             continue
         elif value.isdigit():
@@ -24,9 +24,9 @@ def collect_val_transfer(msg):
             return decimal_val
         else:
             return value
-"""
+
 def validate_val(val):
-    if val.isdigit and val[-1] == "0" and val != "0":
+    if val.isdigit and val not in ["", "0"] and val[-1] == "0":
         return True
     else:
         return False
@@ -35,14 +35,12 @@ def collect_val(msg):
     while True:
         value = input(msg)
         if not validate_val(value):
-            print("Invalid entry. Enter values with or without number of cents (e.g. '50' or '50.00').")
+            print("Invalid entry.")
             continue
-        elif value.isdigit():
+        else:
             decimal_val = value + ".00"
             return decimal_val
-        else:
-            return value
-
+        
 def validate_pin(user_id, unhashed):
     user = get_user_info(user_id)
     salt = user[4]
@@ -95,7 +93,7 @@ while True:
     # ask the users to reenter their IDs.
     user = get_user_info(int(user_id))     #  is this ok?
     if user == None:
-        print("Invalid entry.  Please try again.")
+        print("Invalid entry.  .")
         continue
     else:      # cut?
         break
@@ -144,13 +142,13 @@ while True:
     while True:
         choice = input('Enter a-f: ').lower()
         if choice == "a":
-            amount = collect_val("Enter how much you'd like to withdraw: $")
+            amount = collect_val("Enter how much you'd like to withdraw in multiples of 10: $")
             withdraw(amount, check_acct_id, user_id)
             break
         if choice == "b":
             # In real cases the user will insert money, and the machine will count the value,
             # but in this program, let the user enter the amount he/she deposits.
-            amount = collect_val('Enter the amount of money you are depositing: $')
+            amount = collect_val('Enter the amount of money you are depositing in multiples of 10: $')
             deposit(amount, check_acct_id, user_id)
             break
         if choice == "c":
@@ -166,19 +164,20 @@ while True:
                     print("\nInvalid entry.  Enter 'a' or 'b'.")
                     continue
                 while True:
-                    recip_acct_num = get_number("\nEnter the recipient's account number: ")
+                    recip_acct_num = get_number("\nEnter the recipient's account ID: ")
                     list_recip_info = get_recip_info(recip_acct_num)
                     if int(recip_acct_num) == acct_id:
-                        print("\nYou entered the ID of the account from which you wish to "
-                              "make a transfer.\nPlease enter an account ID of "
+                        print("\nYou entered the ID of the account from which you will "
+                              "make a transfer.\nPlease enter the account ID of "
                               "the recipient.")
                         continue
-                    elif list_recip_info == None:                # can I put 121 right before this line?
+                    elif list_recip_info == None:
                         print(f"\nThe given account ID {recip_acct_num} is not valid.")
                         while True:
                             option = input("\nEnter 'a' to abort the transaction, "
                                 "'b' to continue: ").lower()
                             if option == "a":
+                                print("Bye.  Have a nice day!")
                                 exit()
                             elif option == "b":
                                 break
@@ -186,11 +185,11 @@ while True:
                                 "\nInvalid entry."
                         continue
                     else:
-                        amount = collect_val("the amount you will transfer: ")
+                        amount = collect_transfer_val("Enter the amount you will transfer: ")
                         trs_notes = input("\nEnter transactions notes(optional): ")
                         recip_id, recip = list_recip_info
-                        print(f"\nYou wish to transfer ${amount} to \n{recip}\n"
-                              f"Account ID: {recip_acct_num}")
+                        print(f"\nYou will transfer ${amount} to \n{recip}\n"
+                              f"Account ID: {recip_acct_num}\nTransaction notes: {trs_notes}")
                     while True:
                         option = input("\nEnter 'a' to proceed with this transfer,\n"
                                        "or enter 'b' to make changes: ").lower()
@@ -246,7 +245,7 @@ while True:
         else:
             print('Invalid entry.  Please try again.')  
     while True:
-        choice = input("Do you wish to make further transactions? (y/n): ").lower()
+        choice = input("Would you like to make further transactions? (y/n): ").lower()
         if choice == "n":
             print("Thank you.  Have a nice day!")
             exit()
