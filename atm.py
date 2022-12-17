@@ -1,8 +1,10 @@
 from sql import *
 import hashlib
 
-def validate_val(val):
-    if val.isdigit():
+def validate_val_transfer(val):
+    if val in ["0", "0.00"]:
+        return False
+    if val.isdigit(): 
         return True
     elif len(val) < 4:
         return False 
@@ -10,18 +12,36 @@ def validate_val(val):
         return True
     else:
         return False
-
-def collect_val(type_val):
+"""
+def collect_val_transfer(msg):
     while True:
-        dp = input(f"Enter {type_val} (): ")
-        if not validate_val(dp):
-            print("Invalid entry.")
-            time.sleep(1.5)
-        elif dp.isdigit():
-            decimal_val = dp + ".00"
+        value = input(msg)
+        if not validate_val(value):
+            print("Invalid entry. Enter values with or without number of cents (e.g. '50' or '50.00').")
+            continue
+        elif value.isdigit():
+            decimal_val = value + ".00"
             return decimal_val
         else:
-            return dp
+            return value
+"""
+def validate_val(val):
+    if val.isdigit and val[-1] == "0" and val != "0":
+        return True
+    else:
+        return False
+
+def collect_val(msg):
+    while True:
+        value = input(msg)
+        if not validate_val(value):
+            print("Invalid entry. Enter values with or without number of cents (e.g. '50' or '50.00').")
+            continue
+        elif value.isdigit():
+            decimal_val = value + ".00"
+            return decimal_val
+        else:
+            return value
 
 def validate_pin(user_id, unhashed):
     user = get_user_info(user_id)
@@ -57,34 +77,33 @@ def display_with_spaces(list):
         str += item + space * num
     print(str)
 
-# In a real setting, the user will insert his/her card,
-# and the machine will read off thire user_ID, 
-# so there's no need to validate the IDs. 
+# In a real setting, the users will insert thier cards,
+# and the machine will read off thier IDs, 
+# so there's no need to validate the values. 
 # But for the sake of this program, I prepared validation
-# since the user wll input it manually.
+# since the users will input their IDs manually.
 
-# check if the given user ID is an integer, since only int can be sent as an argument
-# to function "get_user_info"
+# check if the given value consists of numbers only, 
+# since non numeric values cause errors when they are set as arguments
+# for "get_user_info" function.
 while True:
     user_id = input("Enter your user ID: ")
     if not user_id.isdigit():
-        print("Invalid entry.  Please try again, "
-            "or exit the program by pressing 'ctrl + c'")
+        print("Invalid entry.  Please try again.")
         continue   
-    # Get user info of the given ID from DB.  If no user exists with the ID,
-    # ask the user to reenter their ID.
-    user = get_user_info(int(user_id))
+    # Get user info of the given ID from DB.  If no user with the ID exists,
+    # ask the users to reenter their IDs.
+    user = get_user_info(int(user_id))     #  is this ok?
     if user == None:
-        print("Invalid entry.  Please try again, "
-            "or exit the program by pressing 'ctrl + c'")
+        print("Invalid entry.  Please try again.")
         continue
-    else:
+    else:      # cut?
         break
 
-# if the card has been deactivated (if it has a flag value of "s" in Table Users.)
+# If the card has been deactivated (if the flag value is set to "s" in Table Users)
 # tell the user to call personnel.
 if user[8] == "s":
-    print("\nYour card has been suspended.\nPlease call "
+    print("\nYour card has been deactivatd.\nPlease call "
         "the number on the back of your card for assistance.")
     exit()
 # Let the user input their pin.  If they get it wrong 4 times,
@@ -106,11 +125,10 @@ while n < 4:
         deactivate(user_id)
         exit()
 
-# Set values in User class object user and the current date into variables
+# Set values that were stored in User class object "user" into variables.
 name = user[0] + " " + user[1]
 svg_acct_id = user[6]
 check_acct_id = user[7]
-date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
 print("*****************")
 print(f"     Hello!")
@@ -120,19 +138,19 @@ while True:
     print('a. Withdrawal')
     print('b. Deposit')
     print('c. Transfer')
-    print('d. View your balance')
-    print('e. View recent transactions')
+    print('d. View your account balances')
+    print('e. View recent transactions (from the past 30 days')
     print('f. Exit\n')
     while True:
         choice = input('Enter a-f: ').lower()
         if choice == "a":
-            amount = collect_val('Enter the amount you wish to withdraw: ')
+            amount = collect_val("Enter how much you'd like to withdraw: $")
             withdraw(amount, check_acct_id, user_id)
             break
         if choice == "b":
             # In real cases the user will insert money, and the machine will count the value,
             # but in this program, let the user enter the amount he/she deposits.
-            amount = collect_val('Enter the amount of money you are depositing: ')
+            amount = collect_val('Enter the amount of money you are depositing: $')
             deposit(amount, check_acct_id, user_id)
             break
         if choice == "c":

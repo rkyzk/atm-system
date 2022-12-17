@@ -1,19 +1,7 @@
 import sqlite3
+from datetime import datetime, timedelta
 import decimal
 D=decimal.Decimal
-from datetime import datetime, timedelta
-
-def adapt_decimal(d):
-    return str(d)
-
-def convert_decimal(s):
-    return decimal.Decimal(s.decode('utf-8'))
-
-# Register the adapter
-sqlite3.register_adapter(D, adapt_decimal)
-
-# Register the converter
-sqlite3.register_converter("decimal", convert_decimal)
 
 """
 Create table "Users" to store information of users.
@@ -285,8 +273,6 @@ def withdraw(amount, check_acct_id, user_id):
             c.execute('Begin')
             c.execute("UPDATE accounts SET balance = '" + str(new_balance)
                       + "' WHERE acct_id = " + str(check_acct_id))
-            print("UPDATE accounts SET balance = " + str(new_balance)
-                      + " WHERE acct_id = " + str(check_acct_id))
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
                       " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
@@ -294,7 +280,7 @@ def withdraw(amount, check_acct_id, user_id):
                    'trs_to_or_from': "NA", 'trs_notes': "NA",
                    'amount': "-" + amount, 'date': date})
             conn.commit()
-            print(f"\n{amount} has been withdrawn from your checking account."
+            print(f"\n${amount} has been withdrawn from your checking account."
                   f"\nPlease take your money and card.")
     except Exception as e:
         print("There was an error.  Withdrawal is not possible at this time.  Please try again.")
