@@ -38,6 +38,18 @@ def collect_transfer_val(msg):
         else:
             return value
 
+def collect_val(type_val):
+    while True:
+        dp = input(f"Enter {type_val} (): ")
+        if not validate_val(dp):
+            print("Invalid entry.")
+            time.sleep(1.5)
+        elif dp.isdigit():
+            decimal_val = dp + ".00"
+            return decimal_val
+        else:
+            return dp
+        
 def validate_val(val):
     """
     Return "True" if the argument is a non zero positive number
@@ -55,14 +67,15 @@ def collect_val(msg):
     two decimal digits ".00" to the value and return it.
     """
     while True:
-        value = input(msg)
+        value = input(f"Enter {type_val}: ")
         if not validate_val(value):
             print("Invalid entry.")
-            continue
-        else:
+        elif dp.isdigit():
             decimal_val = value + ".00"
             return decimal_val
-        
+        else:
+            return value
+
 def validate_pin(user_id, unhashed):
     """
     Get the salt and the stored key for the given user_id from the database,

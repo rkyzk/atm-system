@@ -11,7 +11,6 @@ from User import User
 def get_pin():
     """
     Generate a random 6-digit pin and return it.
-    return str_pin -- pin
     """
     str_pin = ""  
     for n in range(6):
@@ -32,34 +31,35 @@ def hash_pin_with_salt(pin, salt):
     return key
 
 def validate_val(val):
-    if val.isdigit():
-        return True
-    elif len(val) < 4:
-        return False 
-    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
+    """
+    Return "True" if the argument is a non zero positive number
+    and a multiple of 10.  Otherwise return "False."
+    """
+    if val.isdigit and val not in ["", "0"] and val[-1] == "0":
         return True
     else:
         return False
 
-def collect_val(type_val):
+def collect_val(msg):
+    """
+    If the argument "msg" doesn't pass validate_val function,
+    prompt the user to reenter a valid value.  Otherwise add
+    two decimal digits ".00" to the value and return it.
+    """
     while True:
-        dp = input(f"Enter {type_val} (): ")
-        if not validate_val(dp):
+        value = input(f"Enter {type_val}: ")
+        if not validate_val(value):
             print("Invalid entry.")
-            time.sleep(1.5)
         elif dp.isdigit():
-            decimal_val = dp + ".00"
+            decimal_val = value + ".00"
             return decimal_val
         else:
-            return dp
+            return value
 
 def validate_name(name):
     """
     Check if the name string contains only alphabets.
     If so, return True, if not return False.
-
-    Argument:
-    name -- name to validate
     """
     letters = name.replace(" ", "")
     if letters.isalpha():
@@ -72,9 +72,6 @@ def collect_name(fill_in_the_b):
     Prompt the user to enter first or last name.
     Have the input validate.  If it passes the validation,
     return the input. If not prompt the user to reenter the name. 
-
-    Argument:
-    f_l_name -- specifies first or last name
     """
     while True:
         name = input(f"Enter the customer's {fill_in_the_b}: ")
@@ -86,13 +83,8 @@ def collect_name(fill_in_the_b):
 
 def get_ids(code):
     """
-    Get a user ID, savings account ID and checking account ID for a new customer 
-    based on their selection of the bank.
-
-    Argument:
-    code -- the bank selection (a: North Bank; b: East Bankl c: South Bank)
-    Return value:
-    acct_info  -- list containing the bank name, user ID and account IDs
+    Get a user ID, savings account ID and checking account ID 
+    for a new customer based on their selection of the bank.
     """
     while True:
         # Assign the bank name to the variable 'bank'.
@@ -105,14 +97,15 @@ def get_ids(code):
         if code == "c":
             bank = "South Bank"
             break
-        else:  # correct------------------------------?
+        else:
             print("Invalid entry.  Please try again.")
             time.sleep(1.5)
 
     user_id = get_user_id(code)
     new_accts = get_acct_ids(code)
     acct_info = []
-    # Store the bank name, user ID and account IDs in the list "account_info," and return the list
+    # Store the bank name, user ID and account IDs in the list 
+    # "account_info," and return the list
     acct_info.append(bank)
     acct_info.append(user_id)
     acct_info.append(new_accts)
@@ -121,9 +114,6 @@ def get_ids(code):
 def print_data(user):
     """
     Print the information of a user.
-
-    Argument:
-    user -- User class object
     """
     print(f"Name: {user.fname} {user.lname}")
     print(f"User ID: {user.user_id}")
@@ -134,7 +124,6 @@ def print_data(user):
     print(f"Savings Account: ${user.svg_dp}")
     print(f"Checking Account: ${user.check_dp} \n")
 
-"""
 print("****************************")
 print("          Hello!")
 print("****************************\n")
@@ -153,7 +142,6 @@ while True:
     code = input("Your input: ").lower()  # The bank code
     if code not in ["a", "b", "c"]:
         print("Invalid entry.")
-        time.sleep(1.5)
     else:
         break
 svg_dp = collect_val("Initial deposit in savings account")
@@ -168,13 +156,8 @@ key = hash_pin_with_salt(pin, salt)
 # In real situations the pin will be shown only to the customer
 # but here, it will be printed so the program can be tested.
 print(f"Pin: {pin}")
-print(key) # remove this later
-print(salt)  # remove this later
-print(user_id)
-print(svg_acct_id, check_acct_id, bank)
-
+# get the current date time
 date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
 # Store all user info into User class object "user" 
 user = User(fname, lname, holder, bank, user_id, salt, key, svg_acct_id, 
             check_acct_id, svg_dp, check_dp, date)
