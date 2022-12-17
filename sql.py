@@ -64,6 +64,7 @@ def create_table_transactions():
         with conn:
             c.execute("""CREATE TABLE IF NOT EXISTS Transactions (
                 acct_id integer NOT NULL,
+                acct_type text NOT NULL,
                 user_id integer NOT NULL,
                 trs_type text NOT NULL,
                 trs_to_or_from text NOT NULL,
@@ -122,11 +123,11 @@ def get_user_id(code):
     code -- bank code
     """
     if code == "a":
-        sql = "SELECT user_id FROM users WHERE user_id LIKE '1%'"
+        sql = "SELECT user_id FROM Users WHERE user_id LIKE '1%'"
     elif code == "b":
-        sql = "SELECT user_id FROM users WHERE user_id LIKE '2%'"
+        sql = "SELECT user_id FROM Users WHERE user_id LIKE '2%'"
     else:
-        sql = "SELECT user_id FROM users WHERE user_id LIKE '3%'"
+        sql = "SELECT user_id FROM Users WHERE user_id LIKE '3%'"
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
     c.execute(sql)
@@ -160,50 +161,50 @@ def get_acct_ids(code):
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
     for var in sql_var:
-        sql = "SELECT acct_id FROM accounts WHERE acct_id LIKE " + var
+        sql = "SELECT acct_id FROM Accounts WHERE acct_id LIKE " + var
         c.execute(sql)
         list = c.fetchall()
         new_accts.append(int((max(list))[0]) + 1)
     conn.close()
     return new_accts
     
-def create_new_accounts(new_accts_info):
+def create_new_accounts(user):
     try:
-        conn = sqlite3.connect('bank.db', detect_types=sqlite3.PARSE_DECLTYPES)
+        conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute('Begin')
         # insert user information to table "Users"
         c.execute("INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, "
                     ":key, :svg_acct_id, :check_acct_id, :flag)",
-                  {'fname': new_accts_info.fname, 'lname': new_accts_info.lname,
-                   'bank': new_accts_info.bank, 'user_id': new_accts_info.user_id,
-                   'salt': new_accts_info.salt, 'key': new_accts_info.key,
-                   'svg_acct_id': new_accts_info.svg_acct_id,
-                   'check_acct_id': new_accts_info.check_acct_id, 'flag': 'a'})
+                  {'fname': user.fname, 'lname': user.lname,
+                   'bank': user.bank, 'user_id': user.user_id,
+                   'salt': user.salt, 'key': user.key,
+                   'svg_acct_id': user.svg_acct_id,
+                   'check_acct_id': user.check_acct_id, 'flag': 'a'})
         # insert savings account into table "Accounts"
         c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
-                  {'acct_id': new_accts_info.svg_acct_id, 'user_id': new_accts_info.user_id,
-                   'holder': new_accts_info.holder, 'bank': new_accts_info.bank,
-                   'acct_type': "savings", 'balance': new_accts_info.svg_dp})
+                  {'acct_id': user.svg_acct_id, 'user_id': user.user_id,
+                   'holder': user.holder, 'bank': user.bank,
+                   'acct_type': "savings", 'balance': user.svg_dp})
         # insert checking account into table "Accounts"
         c.execute("INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)",
-                  {'acct_id': new_accts_info.check_acct_id, 'user_id': new_accts_info.user_id,
-                   'holder': new_accts_info.holder, 'bank': new_accts_info.bank,
-                   'acct_type': "checking", 'balance': new_accts_info.check_dp})
+                  {'acct_id': user.check_acct_id, 'user_id': user.user_id,
+                   'holder': user.holder, 'bank': user.bank,
+                   'acct_type': "checking", 'balance': user.check_dp})  
         # insert the record of initial deposit to savings account into table "Transactions"
-        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from,"
-        " :trs_notes, :amt_with_sign, :date)",
-        {'acct_id': new_accts_info.svg_acct_id, 'user_id': new_accts_info.user_id,
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id, :trs_type, :trs_to_or_from,"
+        " :trs_notes, :amount, :date)",
+        {'acct_id': user.svg_acct_id, 'acct_type': "savings", 'user_id': user.user_id,
          'trs_type': "deposit", 'trs_to_or_from': "NA",
-         'trs_notes': "initial deposit", 'amt_with_sign': "+" + new_accts_info.svg_dp,
-         'date': new_accts_info.date})
+         'trs_notes': "initial deposit", 'amount': "+" + user.svg_dp,
+         'date': user.date})
         # insert the record of initial deposit to checking account into table "Transactions"
-        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id, :trs_type, :trs_to_or_from,"
-                  " :trs_notes, :amt_with_sign, :date)",
-                  {'acct_id': new_accts_info.check_acct_id, 'user_id': new_accts_info.user_id,
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id, :trs_type, :trs_to_or_from,"
+                  " :trs_notes, :amount, :date)",
+                  {'acct_id': user.check_acct_id, 'acct_type': "checking", 'user_id': user.user_id,
                    'trs_type': "deposit", 'trs_to_or_from': "NA",
-                   'trs_notes': "initial deposit", 'amt_with_sign': "+" + new_accts_info.check_dp,
-                   'date': new_accts_info.date})
+                   'trs_notes': "initial deposit", 'amount': "+" + user.check_dp,
+                   'date': user.date})
         conn.commit()
         print("The data have been stored in the database.")
     except Exception as e:
@@ -220,7 +221,7 @@ def get_user_info(user_id):
     """
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE user_id = " + str(user_id))
+    c.execute("SELECT * FROM Users WHERE user_id = " + str(user_id))
     user = c.fetchone()
     return user
     conn.close()
@@ -248,7 +249,7 @@ def activate(user_id):
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute('Begin')
-        c.execute("UPDATE users SET flag = 'a' WHERE user_id = "
+        c.execute("UPDATE Users SET flag = 'a' WHERE user_id = "
              + str(user_id))
         conn.commit()
         message = "The card has been activated."
@@ -264,19 +265,19 @@ def withdraw(amount, check_acct_id, user_id):
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
-        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
+        c.execute("SELECT balance FROM Accounts WHERE acct_id = " + str(check_acct_id))
         old_balance = c.fetchone()
         new_balance = (D(old_balance[0]) - D(amount))
         if new_balance < 0:
             print("Not sufficient amount of money in the account.")
         else:
             c.execute('Begin')
-            c.execute("UPDATE accounts SET balance = '" + str(new_balance)
+            c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
                       + "' WHERE acct_id = " + str(check_acct_id))
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id,"
                       " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
-                  {'acct_id': check_acct_id, 'user_id': user_id, 'trs_type': "withdrawal",
+                  {'acct_id': check_acct_id, 'acct_type': "checking", 'user_id': user_id, 'trs_type': "withdrawal",
                    'trs_to_or_from': "NA", 'trs_notes': "NA",
                    'amount': "-" + amount, 'date': date})
             conn.commit()
@@ -295,18 +296,18 @@ def deposit(amount, check_acct_id, user_id):
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
-        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(check_acct_id))
+        c.execute("SELECT balance FROM Accounts WHERE acct_id = " + str(check_acct_id))
         old_balance = c.fetchone()
         new_balance = D(old_balance[0]) + D(amount)
         c.execute('Begin')
-        c.execute("UPDATE accounts SET balance = '" + str(new_balance)
+        c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
                   + "' WHERE acct_id = " + str(check_acct_id))
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
-                  " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
-                  {'acct_id': check_acct_id, 'user_id': user_id, 'trs_type': "deposit",
-                   'trs_to_or_from': "NA", 'trs_notes': "NA",
-                   'amount': "+" + amount, 'date': date})
+        c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id,"
+            " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
+            {'acct_id': check_acct_id, 'acct_type': "checking", 'user_id': user_id, 
+            'trs_type': "deposit", 'trs_to_or_from': "NA", 'trs_notes': "NA",
+            'amount': "+" + amount, 'date': date})
         conn.commit()
         print(f"${amount} has been added to your checking account.")
     except Exception as e:
@@ -318,59 +319,65 @@ def deposit(amount, check_acct_id, user_id):
     finally:
         conn.close()
 
-def get_recip_info(recip_acct_num):
+def get_recip_info(recip_acct_id):
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
     # Get the recipient's name from accounts
-    c.execute("SELECT user_id, holder FROM accounts WHERE acct_id = " + str(recip_acct_num))
+    c.execute("SELECT user_id, holder FROM Accounts WHERE acct_id = " + str(recip_acct_id))
     recip = c.fetchone()
     conn.close()
     return recip
 
-def transfer(name, user_id, acct_id, amount, recip, recip_id, trs_notes, recip_acct_num):
+def transfer(name, user_id, acct_id, acct_type, amount, recip, recip_user_id, trs_notes, recip_acct_id):
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         # Get the balance of the sender
-        c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(acct_id))
+        c.execute("SELECT balance FROM Accounts WHERE acct_id = " + str(acct_id))
         old_balance = c.fetchone()
         # Check if the sender has sufficient money for the transfer
         if D(old_balance[0]) < D(amount):
-            print("Not sufficient amount of money in your account.\n"
-                + "The transfer can't be made."
+            print("You don't have sufficient money in your account to make this transfer.\n"
                 + "The program will be terminated.")
             exit()
         else:
             new_balance = D(old_balance[0]) - D(amount)
             c.execute('Begin')
             # update the sender's new balance
-            c.execute("UPDATE accounts SET balance = '" + str(new_balance)
+            c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
                         + "' WHERE acct_id = " + str(acct_id))
+            print("UPDATE Accounts SET balance = '" + str(new_balance)
+                        + "' WHERE acct_id = " + str(acct_id))          
             # Add to the transaction history
             trs_type = "transfer sent"
             trs_to_or_from = "transfer to " + recip
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id,"
                       " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
-                      {'acct_id': acct_id, 'user_id': user_id, 'trs_type': trs_type,
+                      {'acct_id': acct_id, 'acct_type': acct_type, 'user_id': user_id, 'trs_type': trs_type,
                        'trs_to_or_from': trs_to_or_from, 'trs_notes': trs_notes,
                        'amount': "-" + amount, 'date': date})
-
             # Get the balance of the recipient
-            acct_id = recip_acct_num
-            c.execute("SELECT balance FROM accounts WHERE acct_id = " + str(acct_id))
+            print(recip_acct_id)
+            if str(acct_id)[1] == "1":
+                acct_type = "saving"
+            else:
+                acct_type = "checking"
+            c.execute("SELECT balance FROM Accounts WHERE acct_id = " + str(recip_acct_id))
             old_balance = c.fetchone()
             # Calculate the new balance of the recipient
             new_balance = D(old_balance[0]) + D(amount)
             # Update the recipient's new balance
-            c.execute("UPDATE accounts SET balance = '" + str(new_balance)
-                + "' WHERE acct_id = " + str(acct_id))
+            c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
+                + "' WHERE acct_id = " + str(recip_acct_id))
+            print("UPDATE Accounts SET balance = '" + str(new_balance)
+                + "' WHERE acct_id = " + str(recip_acct_id))
             # Add to the transaction history
             trs_type = "transfer received"
             trs_to_or_from = "transfer from " + name
-            c.execute("INSERT INTO Transactions VALUES (:acct_id, :user_id,"
+            c.execute("INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id,"
                       " :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)",
-                      {'acct_id': acct_id, 'user_id': user_id, 'trs_type': trs_type,
+                      {'acct_id': recip_acct_id, 'acct_type': acct_type, 'user_id': recip_user_id, 'trs_type': trs_type,
                        'trs_to_or_from': trs_to_or_from, 'trs_notes': trs_notes,
                        'amount': "+" + amount, 'date': date})
             conn.commit()
@@ -384,10 +391,10 @@ def transfer(name, user_id, acct_id, amount, recip, recip_id, trs_notes, recip_a
     finally:
         conn.close()
 
-def display_balance(user_id):
+def get_balance(user_id):
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
-    c.execute("SELECT acct_id, balance FROM accounts WHERE user_id = " + str(user_id))
+    c.execute("SELECT acct_id, balance FROM Accounts WHERE user_id = " + str(user_id))
     list = c.fetchall()
     return list
     conn.close()
@@ -397,7 +404,7 @@ def display_transactions(user_id):
     start_date_str = start_datetime.strftime("%Y-%m-%d %H:%M:%S")
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
-    c.execute("SELECT acct_id, date, trs_type, trs_to_or_from, trs_notes, amount "
+    c.execute("SELECT acct_id, acct_type, date, trs_type, trs_to_or_from, trs_notes, amount "
               "FROM Transactions WHERE user_id = " + str(user_id) + " AND date >= '" + start_date_str + "'")
     list = c.fetchall()
     return list
@@ -420,12 +427,17 @@ def create_table_decimal():
 def update():
     conn = sqlite3.connect('bank.db')
     c = conn.cursor()
-    c.execute("UPDATE accounts SET balance = '1000.00' WHERE acct_id = 3200001")
+    c.execute("UPDATE Transactions SET user_id = 200001 WHERE amount = '+10.00'")
     conn.commit()
     conn.close()
 
 # withdraw("10.00", 2200001, 200001)
-# update()
+#update()
+#delete_tables()
+
+#create_table_users()
+#create_table_accounts()
+#create_table_transactions()
 print_tables()
 """
 num = D('3.00')
@@ -477,9 +489,11 @@ def insert_transaction(acct_id, user_id, trs_type, trs_to_or_from, trs_notes, am
     conn.commit()
     conn.close()
 
-# delete_tables()
+delete_tables()
+"""
 print_tables()
-#create_table_users()
-#create_table_accounts()
-#create_table_transactions()
+"""
+create_table_users()
+create_table_accounts()
+create_table_transactions()
 """

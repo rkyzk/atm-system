@@ -67,7 +67,7 @@ def print_row(list):
         display_with_spaces(item)
 
 def display_with_spaces(list):
-    list_num = [32, 22, 32, 20, 10]
+    list_num = [30, 20, 30, 30, 10]
     str = ""
     for n, item in enumerate(list):
         space = " "
@@ -93,7 +93,7 @@ while True:
     # ask the users to reenter their IDs.
     user = get_user_info(int(user_id))     #  is this ok?
     if user == None:
-        print("Invalid entry.  .")
+        print("Invalid entry.")
         continue
     else:      # cut?
         break
@@ -158,21 +158,23 @@ while True:
                                "'b' for checking account: ").lower()
                 if option == 'a':
                     acct_id = svg_acct_id
+                    acct_type = "savings"
                 elif option == 'b':
                     acct_id = check_acct_id
+                    acct_type = "checking"
                 else:
                     print("\nInvalid entry.  Enter 'a' or 'b'.")
                     continue
                 while True:
-                    recip_acct_num = get_number("\nEnter the recipient's account ID: ")
-                    list_recip_info = get_recip_info(recip_acct_num)
-                    if int(recip_acct_num) == acct_id:
+                    recip_acct_id = get_number("\nEnter the recipient's account ID: ")
+                    list_recip_info = get_recip_info(recip_acct_id)
+                    if int(recip_acct_id) == acct_id:
                         print("\nYou entered the ID of the account from which you will "
                               "make a transfer.\nPlease enter the account ID of "
                               "the recipient.")
                         continue
                     elif list_recip_info == None:
-                        print(f"\nThe given account ID {recip_acct_num} is not valid.")
+                        print(f"\nThe given account ID {recip_acct_id} is not valid.")
                         while True:
                             option = input("\nEnter 'a' to abort the transaction, "
                                 "'b' to continue: ").lower()
@@ -187,10 +189,11 @@ while True:
                     else:
                         amount = collect_transfer_val("Enter the amount you will transfer: ")
                         trs_notes = input("\nEnter transactions notes(optional): ")
-                        recip_id, recip = list_recip_info
+                        recip_user_id, recip = list_recip_info
                         print(f"\nYou will transfer ${amount} to \n{recip}\n"
-                              f"Account ID: {recip_acct_num}\nTransaction notes: {trs_notes}")
+                              f"Account ID: {recip_acct_id}\nTransaction notes: {trs_notes}")
                     while True:
+                        print(user_id, acct_id, acct_type, recip_user_id, recip_acct_id)
                         option = input("\nEnter 'a' to proceed with this transfer,\n"
                             "enter 'b' to make changes: ").lower()
                         if option in ["a", "b"]:
@@ -201,12 +204,12 @@ while True:
                         break
                     if option == "b":
                         continue
-                transfer(name, user_id, acct_id, amount, recip,
-                    recip_id, trs_notes, recip_acct_num)
+                transfer(name, user_id, acct_id, acct_type, amount,
+                    recip, recip_user_id, trs_notes, recip_acct_id)
                 break
             break
         if choice == "d":
-            list = display_balance(user_id)
+            list = get_balance(user_id)
             print(f"\nYour savings account ID: {list[0][0]}")
             print(f"Balance: ${list[0][1]}")
             print(f"\nYour checking account ID: {list[1][0]}")
@@ -217,27 +220,31 @@ while True:
             svg_list = []
             check_list = []
             for item in list:
-                if str(item[0])[1] == "1":
+                if item[1] == "savings":
                     list = []
-                    for n in range(1, 6):
+                    for n in range(2, 7):
                         list.append(item[n])
                     svg_list.append(list)
                 else:
                     list = []
-                    for n in range(1, 6):
+                    for n in range(2, 7):
                         list.append(item[n])
                     check_list.append(list)
-
-            headings = ["Date", "Transaction type", "Transfer to/from", "Transfer notes",
+            # get current balances
+            list_balance = get_balance(user_id)
+            svg_balance, check_balance = [list_balance[0][1], list_balance[1][1]]
+            headings = ["Date", "Transaction", "Transfer to/from", "Transfer notes",
                         "Amount"]
             print("========================================================================")
-            print("***Savings account transactions\n")
+            print("*Savings account transactions\n")
             display_with_spaces(headings)
             print_row(svg_list)
+            print(f"\nCurrent balance: ${svg_balance}")
             print("========================================================================")
-            print("***Checking account transactions\n")
+            print("*Checking account transactions\n")
             display_with_spaces(headings)
             print_row(check_list)
+            print(f"\nCurrent balance: ${check_balance}")
             break
         if choice == "f":
             print("Bye.  Have a nice day!")
