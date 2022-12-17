@@ -47,10 +47,10 @@ def collect_val(msg):
     two decimal digits ".00" to the value and return it.
     """
     while True:
-        value = input(f"Enter {type_val}: ")
+        value = input(f"Enter {msg}: ")
         if not validate_val(value):
             print("Invalid entry.")
-        elif dp.isdigit():
+        elif value.isdigit():
             decimal_val = value + ".00"
             return decimal_val
         else:
@@ -199,8 +199,8 @@ while True:
             print("a: First name")
             print("b: Last name")
             print("c: Bank")
-            print("d: Deposit in savings account")
-            print("e: Deposit in checking account")
+            print("d: Deposit value in savings account")
+            print("e: Deposit value in checking account")
             print("f: Go back to the previous options\n")
             choice = input("Enter a-f: ").lower()
             # Let the administrator make changes in the customer's information
@@ -237,17 +237,3 @@ while True:
                 break
 # call the function that inserts data into DB
 create_new_accounts(user)
-
-"""
-#insert sample users
-date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-salt = os.urandom(32)
-pin = "111111"
-key = hash_pin_with_salt(pin, salt)
-
-#user = User("John", "Smith", "John Smith", "North Bank", 100001, salt, key, 1100001, 1200001, '1000.00', '1000.00', date)
-#user = User("Katie", "Baker", "Katie Baker", "East Bank", 200001, salt, key, 2100001, 2200001, '1000.00', '1000.00', date)
-#user = User("Jamie", "Adams", "Jamie Adams", "South Bank", 300001, salt, key, 3100001, 3200001, '1000.00', '1000.00', date)
-
-# create_new_accounts(user)

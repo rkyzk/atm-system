@@ -67,10 +67,10 @@ def collect_val(msg):
     two decimal digits ".00" to the value and return it.
     """
     while True:
-        value = input(f"Enter {type_val}: ")
+        value = input(f"Enter {msg}: ")
         if not validate_val(value):
             print("Invalid entry.")
-        elif dp.isdigit():
+        elif value.isdigit():
             decimal_val = value + ".00"
             return decimal_val
         else:

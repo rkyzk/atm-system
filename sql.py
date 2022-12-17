@@ -135,9 +135,6 @@ def get_user_id(code):
     """
     Get a list of existing user IDs of the bank of selection
     and return the next available ID for that bank.
-
-    Argument:
-    code -- bank code
     """
     if code == "a":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '1%'"
@@ -185,7 +182,7 @@ def get_acct_ids(code):
             c.execute(sql)
             list = c.fetchall()
             new_accts.append(int((max(list))[0]) + 1)
-            return new_accts
+        return new_accts
     except Exception as e:
         print("There was an error.  The IDs can't be acquired.")
         print(e)
@@ -509,4 +506,4 @@ def update():
 #create_table_users()
 #create_table_accounts()
 #create_table_transactions()
-#print_tables()
+print_tables()
