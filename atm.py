@@ -192,7 +192,7 @@ while True:
                               f"Account ID: {recip_acct_num}\nTransaction notes: {trs_notes}")
                     while True:
                         option = input("\nEnter 'a' to proceed with this transfer,\n"
-                                       "or enter 'b' to make changes: ").lower()
+                            "enter 'b' to make changes: ").lower()
                         if option in ["a", "b"]:
                             break
                         else:
@@ -208,9 +208,9 @@ while True:
         if choice == "d":
             list = display_balance(user_id)
             print(f"\nYour savings account ID: {list[0][0]}")
-            print(f"Balance: {list[0][1]}")
+            print(f"Balance: ${list[0][1]}")
             print(f"\nYour checking account ID: {list[1][0]}")
-            print(f"Balance: {list[1][1]}\n")
+            print(f"Balance: ${list[1][1]}\n")
             break
         if choice == "e":
             list = display_transactions(user_id)
