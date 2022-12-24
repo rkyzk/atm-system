@@ -86,8 +86,11 @@ def create_table_transactions():
     finally:
         conn.close()
 
-def print_with_linebreaks(list):
-    """Print each item in the list in a new line"""
+def print_with_linebreaks(item_list):
+    """Print each item in the list in a new line.
+    
+    :argument: item_list: list holding entries in a table
+    """
     for row in list:
         print(row)
 
@@ -115,27 +118,14 @@ def print_tables():
     finally:
         conn.close()
 
-def delete_tables():
-    """Delete tables 'Users,' 'Accounts' and 'Transactions'"""
-    try:
-        conn = sqlite3.connect('bank.db')
-        c = conn.cursor()
-        with conn:
-            c.execute("DROP TABLE Users")
-            c.execute("DROP TABLE Accounts")
-            c.execute("DROP TABLE Transactions")
-    except Exception as e:
-        print("There was an error with the system."
-              "The tables weren't deleted.")
-        print(e)
-        exit()
-    finally:
-        conn.close()
-
 def get_user_id(code):
     """
     Get a list of existing user IDs of the selected bank
     and return the next available ID for that bank.
+
+    :argument: code: bank code
+    :return: user ID
+    :rtype: int
     """
     if code == "a":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '1%'"
@@ -169,6 +159,10 @@ def get_acct_ids(code):
     Get a list of savings and checking account IDs,
     find the highest number for both types of accounts
     and return the next available IDs (the highest existing numbers + 1).
+
+    :argument: code: bank code
+    :return: list of savings and checking account IDs
+    :rtype: list
     """
     if code == "a":
         # Store the prefixes of savings and checking account IDs of North Bank.
@@ -211,6 +205,14 @@ def get_acct_ids(code):
         conn.close()
 
 def set_user_values(user):
+    """
+    set dictionary holding variables to be inserted into sql queries
+    for table "Users."
+
+    :argument: user information
+    :return: a set of variables to be set to sql query
+    :rtype: dictionary    
+    """
     values = {'fname': user.fname, 'lname': user.lname, 'bank': user.bank,
             'user_id': user.user_id, 'salt': user.salt, 'key': user.key,
             'svg_acct_id': user.svg_acct_id,
@@ -218,6 +220,16 @@ def set_user_values(user):
     return values
 
 def set_account_values(user, acct_id, balance):
+    """
+    set dictionary holding variables to be inserted into sql queries
+    for table "Accounts."
+
+    :argument: user information
+               acct_id: account ID
+               balance: balance
+    :return: a set of variables to be set to sql query
+    :rtype: dictionary    
+    """
     if str(acct_id)[1] == "1":
         values = {'acct_id': user.svg_acct_id, 'user_id': user.user_id,
                   'holder': " ".join([user.fname, user.lname]), 'bank': user.bank,
@@ -230,6 +242,21 @@ def set_account_values(user, acct_id, balance):
 
 def set_trans_values(acct_id, user_id, trs_type, trs_to_or_from,
                                 trs_notes, amount, date):
+    """
+    set dictionary holding variables to be inserted into sql queries
+    for table "Transactions."
+
+    :argument: acct_id: account ID
+               user_id: user ID
+               trs_type: kind of transaction 
+               trs_to_or_from: in case of a transfer, 
+                               to/from whom the transfer is made
+               amount: amount of transaction
+               date: the date & time of the transaction 
+
+    :return: a set of variables to be set to sql query
+    :rtype: dictionary    
+    """
     if str(acct_id)[1] == "1":
         values = {'acct_id': acct_id, 'acct_type': "savings",
                   'user_id': user_id, 'trs_type': trs_type,
@@ -248,8 +275,7 @@ def create_new_accounts(user_info):
     Insert new accounts information into table "Accounts."
     Insert new transaction records into table "Transactions."
 
-    argument:
-    user_info
+    argument: the user's information
     """
     # Get the current date and time.
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -329,8 +355,10 @@ def get_user_info(user_id):
 
 def deactivate(user_id):
     """
-    Prevent the user with the given ID from logging into
+    Block the user with the given ID from logging into
     the ATM system by setting the flag to "s" ("s" for "suspended").
+
+    :argument: user_id: user ID
     """
     try:
         conn = sqlite3.connect('bank.db')
@@ -353,6 +381,8 @@ def activate(user_id):
     """
     Activate the card by setting the flag value back to
     "a" ("a" for "active").
+
+    argument: user_id: user ID
     """
     try:
         conn = sqlite3.connect('bank.db')
@@ -361,8 +391,7 @@ def activate(user_id):
         c.execute("UPDATE Users SET flag = 'a' WHERE user_id = "
                   + str(user_id))
         conn.commit()
-        message = "The card has been activated."
-        return message
+        print("The card has been activated.")
     except Exception as e:
         if conn:
             conn.rollback()
@@ -502,11 +531,18 @@ def get_recipient(recip_acct_id):
 def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
     """
     Get the balance of the sender. If the balance is less than "amount,"
-    print an error message, and terminate the program.  If the balance
-    is greater than "amount," subtract "amount" from the balance,
-    update the account information and the transaction history.
-    Also get the balance of the recipient.  Add "amount" value to the balance,
-    update the recipient's account information and transaction history.
+    print an error message, and terminate the program.  Otherwise,
+    subtract "amount" from the balance, update the account information
+    and the transaction history.  Also get the balance of the recipient.
+    Add "amount" value to the balance, update the recipient's account
+    information and transaction history.
+
+    :arguments: user: information of the sender
+                acct_id: account ID from which the transfer will be made
+                amount: amount of transfer
+                recipient: full name of the recipient
+                recip_acct_id: account ID to which the money will be sent
+                trs_notes: transfer notes
     """
     # Get the current date and time.
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -577,14 +613,18 @@ def get_balances(user_id):
     """
     Get the balance of the savings and checking accounts
     of the user.
+
+    :argument: user_id: user ID
+    :return: balances of savings and checking accounts
+    :rtype: list
     """
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute("SELECT acct_id, balance FROM Accounts WHERE user_id = "
                   + str(user_id))
-        list = c.fetchall()
-        return list
+        balance_list = c.fetchall()
+        return balance_list
     except Exception as e:
         # In case of an error, roll back if there's a connection,
         # print an error message and terminate the program.
@@ -594,11 +634,12 @@ def get_balances(user_id):
     finally:
         conn.close()
 
-
 def get_transactions(user_id):
-    """
-    Get transaction records of the user
-    in the past 30 days.
+    """Get transaction records of the user in the past 30 days.
+
+    :argument: user_id: user ID
+    :return: list of transactions
+    :rtype: list
     """
     # Get the date time of 30 days ago in string.
     start_datetime = datetime.now() - timedelta(days=30)
@@ -612,8 +653,8 @@ def get_transactions(user_id):
                   "trs_to_or_from, trs_notes, amount FROM Transactions "
                   "WHERE user_id = " + str(user_id) + " AND date >= '"
                   + start_date_str + "'")
-        list = c.fetchall()
-        return list
+        transaction_list = c.fetchall()
+        return transaction_list
     except Exception as e:
         # In case of an error, roll back if there's a connection,
         # print an error message and terminate the program.

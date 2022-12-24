@@ -178,8 +178,7 @@ while True:
                     check_list.append(list)
             # Get current balances.
             list_balances = get_balances(user_id)
-            # Store the balance of the savings account
-            # and that of the checking account.
+            # Store the balances of both accounts in variables.
             svg_balance, check_balance = [list_balances[0][1],
                                           list_balances[1][1]]
             # Make a list of headings in the table of
@@ -199,7 +198,7 @@ while True:
             print_row(check_list)
             print(f"\n{space*78}**Current balance:"
                   f"{space*14}${check_balance}\n")
-            break
+            break      
         if choice == "f":  # Exit
             print("Bye.  Have a nice day!")
             exit()
