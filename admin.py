@@ -8,6 +8,7 @@ import hashlib
 import os
 import time
 from user import User
+from user_partial_info import UserPartialInfo
 from functions import *
 
 print("****************************")
@@ -98,16 +99,17 @@ while True:
                                               "checking account in " \
                                               "a multiple of 10: ")
                 break
-            elif choice == 'f':
+            if choice == 'f':
                 break
             else:
                 print("\nInvalid entry. Please try again.")
             
+# Store all user info in a User class object named "user."
+user_partial_info = UserPartialInfo(fname, lname, bank_code, salt, key, svg_dp, check_dp)
 # Insert the data into DB.
-create_new_accounts(user)
+create_new_accounts(user_partial_info)
 
-
-
+"""
 salt = os.urandom(32)
 pin = "111111"
 key = hash_pin_with_salt(pin, salt)

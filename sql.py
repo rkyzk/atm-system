@@ -1,7 +1,20 @@
 import sqlite3
 from datetime import datetime, timedelta
 import decimal
-D = decimal.Decimal   # ok?
+
+#
+to_decimal = decimal.Decimal
+
+# Set SQL "Insert" queries for different tables into variables.
+sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, " \
+                  ":key, :svg_acct_id, :check_acct_id, :flag)"
+
+sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, " \
+                     ":bank, :acct_type, :balance)"
+
+sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, :acct_type, " \
+                         ":user_id, :trs_type, :trs_to_or_from, :trs_notes, " \
+                         ":amount, :date)"
 
 def create_table_users():
     """Create table "Users" for storing information of users."""
@@ -195,65 +208,82 @@ def get_acct_ids(code):
     finally:
         conn.close()
 
-def create_new_accounts(user):
+def set_user_values(user):
+    values = {'fname': user.fname, 'lname': user.lname, 'bank': user.bank,
+            'user_id': user.user_id, 'salt': user.salt, 'key': user.key,
+            'svg_acct_id': user.svg_acct_id,
+            'check_acct_id': user.check_acct_id, 'flag': 'a'}
+    return values
+
+def set_account_values(user, acct_id, balance):
+    if str(acct_id)[1] == "1":
+        values = {'acct_id': user.svg_acct_id, 'user_id': user.user_id,
+                  'holder': " ".join([user.fname, user.lname]), 'bank': user.bank,
+                  'acct_type': "savings", 'balance': balance}
+    else:
+        values = {'acct_id': user.check_acct_id, 'user_id': user.user_id,
+                  'holder': " ".join([user.fname, user.lname]), 'bank': user.bank,
+                  'acct_type': "checking", 'balance': balance}
+    return values
+
+def set_trans_values(acct_id, user_id, trs_type, trs_to_or_from,
+                                trs_notes, amount, date):
+    if str(acct_id)[1] == "1":
+        values = {'acct_id': acct_id, 'acct_type': "savings",
+                  'user_id': user_id, 'trs_type': trs_type,
+                  'trs_to_or_from': trs_to_or_from,
+                  'trs_notes': trs_notes, 'amount': amount, 'date': date}
+    else:
+        values = {'acct_id': acct_id, 'acct_type': "checking",
+                  'user_id': user_id, 'trs_type': trs_type,
+                  'trs_to_or_from': trs_to_or_from,
+                  'trs_notes': trs_notes, 'amount': amount, 'date': date}
+    return values
+
+def create_new_accounts(user_info):
     """
-    For one new customer, insert the user information into Table Users.
-    Insert new accounts information into Table Accounts.
-    Insert new transaction records into Table Transactions.
+    For a new customer, insert user information into table "Users."
+    Insert new accounts information into table "Accounts."
+    Insert new transaction records into table "Transactions."
+
+    argument:
+    user_info
     """
+    # Get the current date and time.
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Get the bank name, user ID, account IDs and store them
+    # in the following variables.
+    bank = get_bank(user_info.bank_code)
+    user_id = get_user_id(user_info.bank_code)
+    svg_acct_id, check_acct_id = get_acct_ids(user_info.bank_code)
+    # Insert all information into "User" class object "user."
+    user = User(user_info.fname, user_info.lname, bank, user_id,
+                user_info.salt, user_info.key, svg_acct_id,
+                check_acct_id, 'a')
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute('Begin')
         # Insert user information to table "Users."
-        c.execute("INSERT INTO Users VALUES ("
-                  ":fname, :lname, :bank, :user_id, :salt, "
-                  ":key, :svg_acct_id, :check_acct_id, :flag"
-                  ")",
-                  {'fname': user.fname, 'lname': user.lname,
-                   'bank': user.bank, 'user_id': user.user_id,
-                   'salt': user.salt, 'key': user.key,
-                   'svg_acct_id': user.svg_acct_id,
-                   'check_acct_id': user.check_acct_id, 'flag': 'a'
-                   })
+        c.execute(sql_insert_user, set_user_values(user))
         # insert savings account information into table "Accounts"
-        c.execute("INSERT INTO Accounts VALUES ("
-                  ":acct_id, :user_id, :holder, :bank, :acct_type, :balance"
-                  ")",
-                  {'acct_id': user.svg_acct_id, 'user_id': user.user_id,
-                   'holder': user.holder, 'bank': user.bank,
-                   'acct_type': "savings", 'balance': user.svg_dp
-                   })
+        values = set_account_values(user, svg_acct_id, user_info.svg_dp)
+        c.execute(sql_insert_account, values)
         # Insert checking account information into table "Accounts."
-        c.execute("INSERT INTO Accounts VALUES ("
-                  ":acct_id, :user_id, :holder, :bank, :acct_type, :balance"
-                  ")",
-                  {'acct_id': user.check_acct_id, 'user_id': user.user_id,
-                   'holder': user.holder, 'bank': user.bank,
-                   'acct_type': "checking", 'balance': user.check_dp
-                   })
+        values = set_account_values(user, check_acct_id, user_info.check_dp)
+        c.execute(sql_insert_account, values)
         # Insert the record of the deposit into the savings account
         # into table "Transactions."
-        c.execute("INSERT INTO Transactions VALUES ("
-                  ":acct_id, :acct_type, :user_id, :trs_type,"
-                  ":trs_to_or_from, :trs_notes, :amount, :date"
-                  ")",
-                  {'acct_id': user.svg_acct_id, 'acct_type': "savings",
-                   'user_id': user.user_id, 'trs_type': "deposit",
-                   'trs_to_or_from': "NA", 'trs_notes': "",
-                   'amount': "+" + user.svg_dp, 'date': user.date
-                   })
+        amount = "".join(["+", user_info.svg_dp])
+        values = set_trans_values(svg_acct_id, user_id,
+                                  "deposit", "NA", "NA", amount, date)
+        c.execute(sql_insert_transaction, values)
         # Insert the record of the deposit into the checking account
         # into table "Transactions."
-        c.execute("INSERT INTO Transactions VALUES ("
-                  ":acct_id, :acct_type, :user_id, :trs_type, "
-                  ":trs_to_or_from, :trs_notes, :amount, :date"
-                  ")",
-                  {'acct_id': user.check_acct_id, 'acct_type': "checking",
-                   'user_id': user.user_id, 'trs_type': "deposit",
-                   'trs_to_or_from': "NA", 'trs_notes': "",
-                   'amount': "+" + user.check_dp, 'date': user.date
-                   })
+        amount = "".join(["+", user_info.check_dp])
+        values = set_trans_values(check_acct_id, user_id,
+                                  "deposit", "NA", "NA", amount, date)
+        c.execute(sql_insert_transaction, values)
         conn.commit()
         print("The data have been stored in the database.")
     except Exception as e:
@@ -262,7 +292,6 @@ def create_new_accounts(user):
         print("There was an error.  The data haven't been inserted."
               "Please try again.")
         print(e)
-        # return user
         exit()
     finally:
         conn.close()
