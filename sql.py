@@ -6,11 +6,16 @@ from decimal import Decimal
 import sqlite3
 
 # Set SQL "Insert" queries for different tables into variables.
-sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"""
+sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, "\
+                  ":user_id, :salt, :key, :svg_acct_id, :check_acct_id, "\
+                  ":flag)"
 
-sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)"
+sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, "\
+                     ":holder, :bank, :acct_type, :balance)"
 
-sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id, :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)"
+sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, "\
+                         ":acct_type, :user_id, :trs_type, :trs_to_or_from, "\
+                         ":trs_notes, :amount, :date)"
 
 
 def create_table_users():
@@ -546,7 +551,8 @@ def get_recipient(recip_acct_id):
 
 
 def check_balance(acct_id, amount):
-    """Return True if the balance of the given account is greater than 'amount.'
+    """Return True if the balance of the given account is greater than
+    'amount.'
 
     :arguments: acct_id: account ID
                 amount: amount to be transferred

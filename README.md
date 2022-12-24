@@ -151,5 +151,3 @@ No errors were returned from PEP8online.com
 # Credits:
 The code to hash the pin with salt was taken from the following site.
 [How To Hash Passwords In Python]https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
-
-
