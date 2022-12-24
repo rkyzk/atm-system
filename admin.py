@@ -25,10 +25,6 @@ holder = " ".join([fname, lname])
 print("\nAt which bank are you creating accounts?")
 # Get the bank code
 bank_code = collect_bank_code()
-# Get user ID, account IDs and the bank name and store them
-# in the following variables.
-#bank, user_id, new_accts = get_ids(code)
-#svg_acct_id, check_acct_id = new_accts
 # Input initial deposit values for each account.
 svg_dp = collect_val("initial deposit in savings account")
 check_dp = collect_val("initial deposit in checking account")
@@ -52,12 +48,12 @@ while True:
     if answer not in ['a', 'b', 'c']:
         print("\nInvalid entry.  Please try again.")
         continue
-    if answer == "a":
+    elif answer == "a":
         print("\nThe data will be stored into DB...")
         break
-    if answer == "c":
-        print("\nAre you sure you want to terminate the session?"
-              "All information will be lost.\n")
+    elif answer == "c":
+        print("\nAre you sure you want to terminate the session?")
+        print("All information will be lost.\n")
         while True:
             print("Enter 'a' to terminate, "
                   "'b' to go back to the previous options.")
@@ -65,13 +61,12 @@ while True:
             if option == "a":
                 print("\nBye.  Have a nice day!")
                 exit()
-            if option == "b":
+            elif option == "b":
                 break
             else:
                 print("\nInvalid entry.")
-                continue
     else:
-        # Let the user choose which item to update.
+        # Let the user choose which item to correct.
         while True:
             print("Select the item you need to correct.\n")
             print("a: First name")
@@ -81,35 +76,37 @@ while True:
             print("e: Deposit value in checking account")
             print("f: Go back to the previous options\n")
             choice = input("Enter a-f: ").lower()
-            # Let the administrator make changes in the customer's information
+            # Let the user make changes in the customer's information.
             if choice == 'a':
-                user.fname = collect_name("correct first name")
+                fname = collect_name("Enter the customer's " \
+                                     "correct first name: ")
                 break
-            elif choice == 'b':
-                user.lname = collect_name("correct last name: ")
+            if choice == 'b':
+                lname = collect_name("Enter the customer's " \
+                                     "correct last name: ")
                 break
-            elif choice == 'c':
-                # Change the bank, so get a new user ID and account IDs.
-                code = collect_bank_code()
-                user.bank, user.user_id, new_accts = get_ids(code)
-                user.svg_acct_id, user.check_acct_id = new_accts
+            if choice == 'c':
+                bank_code = collect_bank_code()
                 break
-            elif choice == 'd':
-                user.svg_dp = collect_val("Initial deposit in savings account: ")
+            if choice == 'd':
+                svg_dp = collect_mult_of_10("Enter initial deposit in " \
+                                            "savings account in " \
+                                            "a multiple of 10: ")
                 break
-            elif choice == 'e':
-                user.check_dp = collect_val("Initial deposit in checking account: ")
+            if choice == 'e':
+                check_dp = collect_mult_of_10("Enter initial deposit in " \
+                                              "checking account in " \
+                                              "a multiple of 10: ")
                 break
             elif choice == 'f':
                 break
             else:
-                print("\nInvalid entry. Please try again.\n")
-                continue
+                print("\nInvalid entry. Please try again.")
+            
 # Insert the data into DB.
 create_new_accounts(user)
 
 
-date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 salt = os.urandom(32)
 pin = "111111"

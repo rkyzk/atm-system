@@ -5,33 +5,23 @@ import hashlib
 from sql import *
 
 #-----------   Functions used both in atm.py and admin.py modules ----#
-def validate_val(val):
+def collect_mult_of_10(msg):
     """
-    Return "True" if the argument is a multiple of 10.
-    Otherwise return "False."
-    """
-    if val.isdigit and val not in ["", "0"] and val.endswith("0"):
-        return True
-    else:
-        return False
+    Print "msg" and prompt users to enter a value.
+    If the input is a multiple of 10, add two decimal digits ".00
+    and return the value.
 
-def collect_val(msg):
-    """
-    Prompt the user to enter a value that "msg" specifies
-    and validate it.  If "validate_val" function returns False,
-    have the user reenter a valid value.   If True is returned,
-    add two decimal digits ".00" to the value and return it.
+    :argument: msg: prompt message
+    :returns: validated value added with two decimal digits ".00"
+    :rtype: str
     """
     while True:
-        value = input(f"Enter {msg}: ")
-        if not validate_val(value):
-            print("Invalid entry.")
-            continue
-        elif value.isdigit():
-            decimal_val = value + ".00"
+        value = input(msg)
+        if value.isdigit() and value not in ["", "0"] and value.endswith("0"):
+            decimal_val = ".".join([value, "00"])
             return decimal_val
         else:
-            return value
+            print("\nInvalid entry.")
 
 #-----------   Functions used in admin.py.   --------------#
 def get_pin():
