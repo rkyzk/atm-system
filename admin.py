@@ -99,8 +99,9 @@ while True:
                 break
             else:
                 print("\nInvalid entry. Please try again.")
+bank = get_bank(bank_code)
 # Store all user info in a User class object named "user."
-user_partial_info = UserPartialInfo(fname, lname, bank_code, salt, key,
+user_partial_info = UserPartialInfo(fname, lname, bank, salt, key,
                                     svg_dp, check_dp)
 # Insert the data into DB.
 user_id = create_new_accounts(user_partial_info)

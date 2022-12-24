@@ -118,19 +118,19 @@ def print_tables():
         conn.close()
 
 
-def get_user_id(code):
+def get_user_id(bank):
     """
     Get a list of existing user IDs of the selected bank
     and return the next available ID for that bank.
 
-    :argument: code: bank code
+    :argument: bank: bank name
     :return: user ID
     :rtype: int
     """
-    if code == "a":
+    if bank == "North Bank":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '1%'"
         letter = "1"
-    elif code == "b":
+    elif bank == "East Bank":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '2%'"
         letter = "2"
     else:
@@ -155,22 +155,22 @@ def get_user_id(code):
         conn.close()
 
 
-def get_acct_ids(code):
+def get_acct_ids(bank):
     """
     Get a list of savings and checking account IDs,
     find the highest number for both types of accounts
     and return the next available IDs (the highest existing numbers + 1).
 
-    :argument: code: bank code
+    :argument: bank: bank name
     :return: list of savings and checking account IDs
     :rtype: list
     """
-    if code == "a":
+    if bank == "North Bank":
         # Store the first two numbers of savings and checking account IDs of
         # North Bank.
         sql_var = ["'11%'", "'12%'"]
         letter = "1"
-    elif code == "b":
+    elif bank == "East Bank":
         # Do the same for East Bank
         sql_var = ["'21%'", "'22%'"]
         letter = "2"
@@ -291,11 +291,10 @@ def create_new_accounts(user_info):
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # Get the bank name, user ID, account IDs and store them
     # in the following variables.
-    bank = get_bank(user_info.bank_code)
-    user_id = get_user_id(user_info.bank_code)
-    svg_acct_id, check_acct_id = get_acct_ids(user_info.bank_code)
+    user_id = get_user_id(user_info.bank)
+    svg_acct_id, check_acct_id = get_acct_ids(user_info.bank)
     # Insert all information into "User" class object "user."
-    user = User(user_info.fname, user_info.lname, bank, user_id,
+    user = User(user_info.fname, user_info.lname, user_info.bank, user_id,
                 user_info.salt, user_info.key, svg_acct_id,
                 check_acct_id, 'a')
     try:
@@ -323,7 +322,7 @@ def create_new_accounts(user_info):
                                   "deposit", "NA", "NA", amount, date)
         c.execute(sql_insert_transaction, values)
         conn.commit()
-        print("The data have been stored in the database.")
+        print("The data have been stored in the database.\n")
         return user_id
     except Exception as e:
         if conn:
