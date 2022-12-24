@@ -8,8 +8,8 @@ from sql import *
 #-----------   Functions used both in atm.py and admin.py modules ----#
 def collect_mult_of_10(msg):
     """
-    Print "msg" and prompt users to enter a value.
-    If the input is a multiple of 10, add two decimal digits ".00
+    Print the content of "msg" and prompt users to enter a value.
+    If the input is a multiple of 10, add two decimal digits ".00"
     and return the value.
 
     :argument: msg: prompt message
@@ -26,14 +26,24 @@ def collect_mult_of_10(msg):
 
 #-----------   Functions used in admin.py.   --------------#
 def get_pin():
-    """Generate a random 6-digit pin and return it."""
+    """Generate a random 6-digit pin and return it.
+    
+    :return: pin: pin number
+    :rtype: str
+    """
     str_pin = ""
     for n in range(6):
         str_pin += str(random.randrange(10))
     return str_pin
 
 def hash_pin_with_salt(pin, salt):
-    """Hash the pin with a given salt and return the key."""
+    """Hash the pin with a given salt and return the key.
+    
+    :argument: pin
+               salt
+    :return: key
+    :rtype: str
+    """
     key = hashlib.pbkdf2_hmac(
         'sha256',
         pin.encode('utf-8'),  # convert the pin to bytes
