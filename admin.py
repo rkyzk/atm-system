@@ -23,8 +23,8 @@ print("\nAt which bank are you creating accounts?")
 # Get the bank code
 bank_code = collect_bank_code()
 # Input initial deposit values for each account.
-svg_dp = collect_val("initial deposit in savings account")
-check_dp = collect_val("initial deposit in checking account")
+svg_dp = collect_mult_of_10("Enter initial deposit in savings account: ")
+check_dp = collect_mult_of_10("Enter initial deposit in checking account: ")
 # Get a pin & salt, and then hash the pin to get a key.
 pin = get_pin()
 salt = os.urandom(32)
@@ -103,4 +103,12 @@ while True:
 user_partial_info = UserPartialInfo(fname, lname, bank_code, salt, key,
                                     svg_dp, check_dp)
 # Insert the data into DB.
-create_new_accounts(user_partial_info)
+user_id = create_new_accounts(user_partial_info)
+# Print IDs and balances of accounts
+list_balances = get_balances(user_id)
+print(f"Name: {fname} {lname}")
+print(f"User ID: {user_id}")
+print(f"Savings Account ID: {list_balances[0][0]}")
+print(f"Balance: ${list_balances[0][1]}")
+print(f"Checking account ID: {list_balances[1][0]}")
+print(f"Balance: ${list_balances[1][1]}\n")

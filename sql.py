@@ -6,15 +6,11 @@ from decimal import Decimal
 import sqlite3
 
 # Set SQL "Insert" queries for different tables into variables.
-sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, "
-                  ":salt, :key, :svg_acct_id, :check_acct_id, :flag)"
+sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, :key, :svg_acct_id, :check_acct_id, :flag)"""
 
-sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, "
-                     ":holder, :bank, :acct_type, :balance)"
+sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, :bank, :acct_type, :balance)"
 
-sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, "
-                         ":acct_type, :user_id, :trs_type, :trs_to_or_from, "
-                         ":trs_notes, :amount, :date)"
+sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, :acct_type, :user_id, :trs_type, :trs_to_or_from, :trs_notes, :amount, :date)"
 
 
 def create_table_users():
@@ -287,7 +283,9 @@ def create_new_accounts(user_info):
     Insert new accounts information into table "Accounts."
     Insert new transaction records into table "Transactions."
 
-    argument: the user's information
+    :argument: user_info: information of user
+    :return: user_id: user ID
+    :rtype: int
     """
     # Get the current date and time.
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -326,6 +324,7 @@ def create_new_accounts(user_info):
         c.execute(sql_insert_transaction, values)
         conn.commit()
         print("The data have been stored in the database.")
+        return user_id
     except Exception as e:
         if conn:
             conn.rollback()
