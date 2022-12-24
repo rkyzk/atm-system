@@ -82,79 +82,69 @@ while True:
                                "Enter 'a' for savings account\n"
                                "'b' for checking account: ").lower()
                 if option == 'a':
-                    acct_id = svg_acct_id
-                    acct_type = "savings"
+                    acct_id = user.svg_acct_id
+                    break
                 elif option == 'b':
-                    acct_id = check_acct_id
-                    acct_type = "checking"
+                    acct_id = user.check_acct_id
+                    break
                 else:
-                    print("\nInvalid entry.  Enter 'a' or 'b'.\n")
-                    continue
-                while True:
-                    # Have the users enter the recipient's account ID.
-                    recip_acct_id = get_number("\nEnter the recipient's "
-                                               "account ID: ")
-                    # Get the recipient's information from DB.
-                    list_recip_info = get_recip_info(recip_acct_id)
-                    # In case the account ID from which the users want
-                    # to transfer the money is entered, tell them to reenter
-                    # the right account ID of the recipient.
-                    if int(recip_acct_id) == acct_id:
-                        print("\nYou entered the ID of the account "
-                              "from which you will make a transfer.\n"
-                              "Please enter the account ID of "
-                              "the recipient.")
-                        continue
-                    # If the given account ID is not found in DB,
-                    # tell them to reenter a valid ID.
-                    elif list_recip_info is None:
-                        print(f"\nThe given account ID {recip_acct_id} "
-                              f"is not valid.")
-                        while True:
-                            option = input("\nEnter 'a' to abort "
-                                           "the transaction, "
-                                           "'b' to continue: ").lower()
-                            if option == "a":
-                                print("Bye.  Have a nice day!")
-                                exit()
-                            elif option == "b":
-                                break
-                            else:
-                                "\nInvalid entry."
-                        continue
-                    else:
-                        # Collect transfer amount.
-                        amount = collect_transfer_val("Enter the amount "
-                                                      "you will transfer: ")
-                        # Have the user enter transfer notes (max 35
-                        # characters).  Check if the length is equal to
-                        # or less than 35 characters.
-                        trs_notes = validate_len(35)
-                        recip_user_id, recip = list_recip_info
-                        # Print the transfer detail for confirmation.
-                        print(f"\nYou will transfer ${amount} to\n{recip}\n"
-                              f"Account ID: {recip_acct_id}\n"
-                              f"Transaction notes: {trs_notes}")
+                    print("\nInvalid entry.  Enter 'a' or 'b'.")
+            while True:
+                # Have the users enter the recipient's account ID
+                # and check the validity of the input.
+                recip_acct_id = check_num_input("\nEnter the recipient's "
+                                                "account ID: ", 8)
+                # Get the recipient's name from DB.
+                recipient = get_recipient(recip_acct_id)
+                # If the account ID is not found in DB, print the notes below.
+                if recipient is None:
+                    print(f"\nThe given account ID {recip_acct_id} "
+                          "is not valid.")
                     while True:
-                        # Ask the users if the transfer can be carried out,
-                        # or changes need to be made.
-                        print(type(recip_acct_id))
-                        option = input("\nEnter 'a' to proceed with "
-                                       "this transfer,\n"
-                                       "enter 'b' to make changes: ").lower()
-                        if option in ["a", "b"]:
+                        option = input("Enter 'a' to abort the transaction, "
+                                       "'b' to continue: ").lower()
+                        if option == "a":
+                            print("Bye.  Have a nice day!")
+                            exit()
+                        elif option == "b":
                             break
                         else:
                             print("\nInvalid entry.")
-                            continue
-                    if option == "a":
+                    continue
+                # In case the account ID from which the users want
+                # to transfer the money is entered, tell them to reenter
+                # the right account ID of the recipient.
+                elif int(recip_acct_id) == acct_id:
+                    print("\nYou entered the ID of the account from which "
+                          "you will make a transfer.\nPlease enter "
+                          "the account ID of the recipient.")
+                    continue
+                else:
+                    # Collect transfer amount.
+                    amount = collect_val("Enter the amount "
+                                         "you will transfer: ")
+                    # Have the users enter transfer notes (max 35
+                    # characters).  Let them reenter the text if
+                    # the length exceeds 35 characters.
+                    trs_notes = validate_len(35)
+                    # Print the transfer detail for confirmation.
+                    print(f"\nYou will transfer ${amount} to\n{recipient}\n"
+                          f"Account ID: {recip_acct_id}\n"
+                          f"Transaction notes: {trs_notes}")
+                while True:
+                    # Ask the users if the transfer can be carried out,
+                    # or they want to make changes.
+                    option = input("\nEnter 'a' to proceed with this transfer,\n"
+                                   "enter 'b' to make changes: ").lower()
+                    if option in ["a", "b"]:
                         break
-                    if option == "b":
-                        continue
-                # Make updates regarding this transfer in the DB
-                transfer(name, user_id, acct_id, acct_type, amount,
-                         recip, recip_user_id, trs_notes, recip_acct_id)
-                break
+                    else:
+                        print("Invalid entry")
+                if option == "a":
+                    break
+            # Make updates regarding this transfer in the DB
+            transfer(user, acct_id, amount, recipient, recip_acct_id,
+                     trs_notes)
             break
         if choice == "d":         # "View your balances" option
             # Get balances from DB and print them.

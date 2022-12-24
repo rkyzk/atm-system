@@ -470,39 +470,55 @@ def deposit(amount, user):
     finally:
         conn.close()
 
-def get_recip_info(recip_acct_id):
+def get_recipient(recip_acct_id):
     """
     Get the user ID and the full name of the customer
     with the given account ID and return the information.
+
+    :argument: recip_acct_id: the account ID of the recipient of a transfer
     """
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         # Get the recipient's user ID and name from table "Accounts."
-        c.execute("SELECT user_id, holder FROM Accounts WHERE acct_id = "
+        c.execute("SELECT holder FROM Accounts WHERE acct_id = "
                   + recip_acct_id)
-        recip = c.fetchone()
-        return recip
+        recipient = c.fetchone()
+        if recipient is None:
+            return None
+        else:
+            return recipient[0]
     except Exception as e:
         # In case of an error, roll back if there's a connection,
-        # print an error message and terminate the program.
-        print("There was an error.  The recipient's information couldn't "
-              "be acquired.")
-        print(e)
+        # return an error message and terminate the program.
+        msg = "There was an error.  " \
+              f"The recipient's information couldn't be acquired.\n{e}"
+        return msg
         exit()
     finally:
         conn.close()
 
-def transfer(name, user_id, acct_id, acct_type, amount,
-             recip, recip_user_id, trs_notes, recip_acct_id
-             ):
+
+def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
     """
-    Get the balance of the sender. If the balance is greater than "amount,"
-    subtract "amount" from the balance, update the account information
-    and the transaction history.
+    Get the balance of the sender. If the balance is less than "amount,"
+    print an error message, and terminate the program.  If the balance
+    is greater than "amount," subtract "amount" from the balance,
+    update the account information and the transaction history.
     Also get the balance of the recipient.  Add "amount" value to the balance,
-    update the account information and transaction history of the recipient.
+    update the recipient's account information and transaction history.
     """
+    # Get the current date and time.
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Insert values into the variables regarding the sender's transaction data.
+    trs_to_or_from = " ".join(["to", recipient])
+    amt_minus = "".join(["-", amount])
+    values = set_trans_values(acct_id, user.user_id,
+                              "transfer sent", trs_to_or_from,
+                              trs_notes, amt_minus, date)
+    # Insert values into variables regarding the recipient's transaction data.
+    name = " ".join([user.fname, user.lname])
+    recip_trs_to_or_from = " ".join(["from", name])
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
@@ -510,60 +526,41 @@ def transfer(name, user_id, acct_id, acct_type, amount,
         c.execute("SELECT balance FROM Accounts WHERE acct_id = "
                   + str(acct_id))
         old_balance = c.fetchone()
-        # Calculate the new balance.
-        new_balance = D(old_balance[0]) - D(amount)
         # If the sender doesn't have enough money in the account,
         # print the message below and terminate the program.
-        if new_balance < 0:
+        if to_decimal(old_balance[0]) < to_decimal(amount):
             print("You don't have sufficient money in your account to "
                   "make this transfer.\nThe program will be terminated.")
             exit()
         else:
-            new_balance = D(old_balance[0]) - D(amount)
+            # Calculate the new balance of the sender.
+            new_balance = to_decimal(old_balance[0]) - to_decimal(amount)
+            # Get the balance and user_id of the recipient.
+            c.execute("SELECT user_id, balance FROM Accounts WHERE acct_id = "
+                      + recip_acct_id)
+            recip_info = c.fetchone()
+            recip_user_id, recip_old_balance = recip_info
+            # Calculate the new balance of the recipient.
+            recip_new_balance = to_decimal(recip_old_balance) \
+                                + to_decimal(amount)
+            amt_plus = "".join(["+", amount])
+            recip_values = set_trans_values(int(recip_acct_id), recip_user_id,
+                                            "transfer received",
+                                            recip_trs_to_or_from,
+                                            trs_notes, amt_plus, date)
             c.execute('Begin')
             # Update the sender's new balance.
             c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
                       + "' WHERE acct_id = " + str(acct_id))
             # Add the record to table "Transactions."
-            trs_type = "transfer sent"
-            trs_to_or_from = " ".join(["to", recip])
-            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            c.execute("INSERT INTO Transactions VALUES ("
-                      ":acct_id, :acct_type, :user_id, :trs_type, "
-                      ":trs_to_or_from, :trs_notes, :amount, :date"
-                      ")",
-                      {'acct_id': acct_id, 'acct_type': acct_type,
-                       'user_id': user_id, 'trs_type': trs_type,
-                       'trs_to_or_from': trs_to_or_from,
-                       'trs_notes': trs_notes, 'amount': "-" + amount,
-                       'date': date})
-            # Get the balance of the recipient.
-            if str(acct_id)[1] == "1":
-                acct_type = "saving"
-            else:
-                acct_type = "checking"
-            c.execute("SELECT balance FROM Accounts WHERE acct_id = "
-                      + recip_acct_id)
-            old_balance = c.fetchone()
-            # Calculate the new balance of the recipient.
-            new_balance = D(old_balance[0]) + D(amount)
-            # Update the recipient's new balance.
-            c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
+            c.execute(sql_insert_transaction, values)
+            # Update the recipient's account info.
+            c.execute("UPDATE Accounts SET balance = '" + str(recip_new_balance)
                       + "' WHERE acct_id = " + recip_acct_id)
             # Add the record to table "Transactions."
-            trs_type = "transfer received"
-            trs_to_or_from = " ".join(["from", name])
-            c.execute("INSERT INTO Transactions VALUES ("
-                      ":acct_id, :acct_type, :user_id, :trs_type,"
-                      " :trs_to_or_from, :trs_notes, :amount, :date"
-                      ")",
-                      {'acct_id': int(recip_acct_id), 'acct_type': acct_type,
-                       'user_id': recip_user_id, 'trs_type': trs_type,
-                       'trs_to_or_from': trs_to_or_from,
-                       'trs_notes': trs_notes, 'amount': "+" + amount,
-                       'date': date})
+            c.execute(sql_insert_transaction, recip_values)
             conn.commit()
-            print("\nThe money has been transferred.")
+            print(f"\n${amount} has been transferred.")
     except Exception as e:
         # In case of an error, roll back if there's a connection,
         # print an error message and terminate the program.

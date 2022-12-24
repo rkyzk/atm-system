@@ -131,45 +131,6 @@ def print_data(fname, lname, bank_code, svg_dp, check_dp):
     print(f"Checking Account: ${check_dp}\n")
 
 #-----------   Functions used in atm.py.   --------------#
-def validate_transfer_val(val):
-    """
-    Return "True" if the argument "val" is a non-zero
-    whole number or a positive number with two decimal digits.
-    (e.g. '50' or '50.00')
-    """
-    if val in ["0", "0.00"]:
-        return False
-    if val.isdigit():
-        return True
-    elif len(val) < 4:
-        return False
-    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
-        return True
-    else:
-        return False
-
-def collect_transfer_val(msg):
-    """
-    Print "msg" and have the users input a value and validate it
-    by "validate_transfer_val()."  If "False" is returned,
-    prompt them to reenter a valid value.
-    Otherwise if the input "value" is an integer,
-    add two decimal digits ".00" and return the value.  If "value"
-    already has two decimal digits, return it as it is.
-    """
-    while True:
-        value = input(msg)
-        if not validate_transfer_val(value):
-            print("Invalid entry. Enter values with or without "
-                  "number of cents (e.g. '50' or '50.00').")
-            continue
-        elif value.isdigit():
-            decimal_val = value + ".00"
-            return decimal_val
-        else:
-            return value
-
-#-----------   Functions used in atm.py.   --------------#
 def validate_pin(user_id, unhashed):
     """
     Get the salt and the stored key for the given user ID from the database,
@@ -203,6 +164,53 @@ def check_num_input(msg, length):
                 return num
         else:
             print("Please enter a valid ID.")
+
+def validate_val(val):
+    """
+    Return "True" if the argument "val" is a non-zero
+    whole number or a positive number with two decimal digits.
+    (e.g. '50' or '50.00')
+
+    :argument: val: value to be validated
+    :return: True or False
+    :rtype: boolean
+    """
+    if val in ["0", "0.00"]:
+        print("Please enter a non-zero value.")
+        return False
+    elif val.isdigit():
+        return True
+    elif len(val) < 4:
+        return False
+    elif val[-3] == "." and val[:-3].isdigit() and val[-2:].isdigit():
+        return True
+    else:
+        return False
+
+def collect_val(msg):
+    """
+    Print "msg" and have the users input a value and validate it
+    with "validate_transfer_val" function.  If "False" is returned,
+    prompt them to reenter a valid value.
+    Otherwise, if the input "value" is an integer,
+    add two decimal digits ".00" and return the value.  If "value"
+    already has two decimal digits, return it as is.
+
+    :argument: msg: prompt message
+    :returns: validated value as is, or added with two decimal digits ".00"
+    :rtype: str
+    """
+    while True:
+        value = input(msg)
+        if not validate_val(value):
+            print("Invalid entry. Enter values with or without "
+                  "number of cents (e.g. '50' or '50.00').")
+            continue
+        elif value.isdigit():
+            decimal_val = value + ".00"
+            return decimal_val
+        else:
+            return value
 
 def display_with_spaces(list):
     """
