@@ -184,19 +184,24 @@ def validate_pin(user_id, unhashed):
     else:
         return False
 
-def get_number(msg):
+def check_num_input(msg, length):
     """
-    Print "msg" and prompt the user to enter a value.
-    Return the value if the input is a whole number.
-    If not, prompt the user to reenter a value.
+    Prompt the users to enter a number and check if the input
+    is a whole number with the specified number of digits
+    starting with bank code 1, 2 or 3.
+
+    :param msg: prompt message
+    :param length: the number of digits
+    :return: the validated number
+    :rtype: str
     """
     while True:
         num = input(msg)
-        if num.isdigit():
-            return num
+        if num.isdigit() and len(num) == length:
+            if num[0] in ["1", "2", "3"]:
+                return num
         else:
             print("Please enter a valid ID.")
-            continue                                 # needed?
 
 def display_with_spaces(list):
     """

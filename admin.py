@@ -10,7 +10,7 @@ import time
 from user import User
 from user_partial_info import UserPartialInfo
 from functions import *
-
+"""
 print("****************************")
 print("          Hello!")
 print("****************************\n")
@@ -114,8 +114,8 @@ salt = os.urandom(32)
 pin = "111111"
 key = hash_pin_with_salt(pin, salt)
 
-user1 = User("John", "Smith", "John Smith", "North Bank", 100001, salt, key, 1100001, 1200001, '1000.00', '1000.00', date)
-user2 = User("Katie", "Baker", "Katie Baker", "East Bank", 200001, salt, key, 2100001, 2200001, '1000.00', '1000.00', date)
-user3 = User("Jamie", "Adams", "Jamie Adams", "South Bank", 300001, salt, key, 3100001, 3200001, '1000.00', '1000.00', date)
+user1 = UserPartialInfo("John", "Smith", "a", salt, key, '1000.00', '1000.00')
+user2 = UserPartialInfo("Katie", "Baker", "b", salt, key, '1000.00', '1000.00')
+user3 = UserPartialInfo("Jamie", "Adams", "c", salt, key, '1000.00', '1000.00')
 
 # create_new_accounts(user3)

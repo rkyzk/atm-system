@@ -1,6 +1,9 @@
 import sqlite3
 from datetime import datetime, timedelta
 import decimal
+from functions import *
+from user_partial_info import UserPartialInfo
+from user import User
 
 #
 to_decimal = decimal.Decimal
@@ -620,3 +623,8 @@ def update():                # cut this part later
               "WHERE amount = '+10.00'")
     conn.commit()
     conn.close()
+
+#create_table_accounts()
+#create_table_users()
+#create_table_transactions()
+#print_tables()

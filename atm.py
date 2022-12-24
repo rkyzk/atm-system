@@ -2,17 +2,17 @@
 from sql import *
 from functions import *
 
-# In a real setting, the users will insert thier cards,
-# and the machine will read off thier IDs,
-# so there's no need to validate the user IDs.
-# But in this program I prepared validation
-# since the users will input their IDs manually.
-
+# In real setting, the users will insert their cards, and the machine will
+# read off their IDs, so there's no need to validate the values.
+# But in this program I prepared validation since the users will input
+# their IDs manually.
+print("*****************")
+print("     Hello!")
+print("*****************")
 while True:
-    # Let the users enter their IDs and check if the input is a whole number.
-    # This check is necessary since only int values can be sent to DB
-    # to search the ID.
-    user_id = get_number("Enter your user ID: ")
+    # Let the users enter their IDs and check if the input is
+    # a 7-digit whole number starting with bank code 1, 2 or 3.
+    user_id = check_num_input("Enter your user ID: ", 7)
     # Get user info of the given ID from DB.
     # If no user with the ID is found, have the users reenter their IDs.
     user = get_user_info(int(user_id))                          # ok?
