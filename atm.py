@@ -15,22 +15,21 @@ while True:
     user_id = check_num_input("Enter your user ID: ", 7)
     # Get user info of the given ID from DB.
     # If no user with the ID is found, have the users reenter their IDs.
-    user = get_user_info(int(user_id))                          # ok?
-    if user is None:
-        print("Invalid entry.")
-        continue
-    else:                   # cut?
+    user = get_user_info(int(user_id))
+    if user:
         break
+    else:
+        print("Invalid entry.")
 # If the card has been deactivated (if the flag value is set to "s" in table
 # "Users," tell the users to call personnel, and terminate the program.
-if user[8] == "s":
+if user.flag == "s":
     print("\nYour card has been deactivatd.\nPlease call "
           "the number on the back of your card for assistance.")
     exit()
 # Let the users input their pin.  If they get it wrong 4 times,
-# the card will be deactivated (the flag value of the user in DB
-# will be set to "s"
-n = 0  # index of the loop
+# the card will be deactivated (the flag value of the user will be set to
+# "s" -- "s" for "suspended")
+n = 0
 while n < 4:
     unhashed = input('Enter your pin: ')
     if validate_pin(user_id, unhashed):
@@ -39,24 +38,19 @@ while n < 4:
     if n < 3:
         print("The pin is wrong.  Please try again.")
         n += 1
-        continue
     else:
-        print("\nLogin failed 4 times.")
-        # After 4 wrong entries, block further login attempts
-        # by setting the flag to 's'
-        deactivate(user_id)
-        exit()
-# Set user info that was stored in DB into variables.
-name = " ".join([user[0], user[1]])
-svg_acct_id = user[6]
-check_acct_id = user[7]
-
-print("*****************")
-print(f"     Hello!")
-print("*****************")
+        n += 1
+else:
+    print("\nLogin failed 4 times.")
+    # Block further login attempts by setting the flag to "s."
+    deactivate(user_id)
+    exit()
+# Set the user's full name into variable "name."
+name = " ".join([user.fname, user.lname])
 # Have the users select the transaction they want to make.
 while True:
-    print("\nSelect the type of transaction you wish to make:\n")
+    print(f"Hello {name},\nSelect the type of transaction "
+          "you wish to make:\n")
     print('a. Withdrawal')
     print('b. Deposit')
     print('c. Transfer')
@@ -66,10 +60,10 @@ while True:
     while True:
         choice = input('Enter a-f: ').lower()
         if choice == "a":         # Withdrawal
-            amount = collect_val("Enter how much you'd like to withdraw "
-                                 "in a multiple of 10: $")
+            amount = collect_mult_of_10("Enter how much you'd like "
+                                        "to withdraw in a multiple of 10: $")
             # Update the balance and transaction history of the user.
-            withdraw(amount, check_acct_id, user_id)
+            withdraw(amount, user)
             break
         if choice == "b":         # Deposit
             # In real setting the users will insert money, and the machine

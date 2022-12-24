@@ -2,6 +2,7 @@
 both in atm.py and admin.py"""
 import random
 import hashlib
+from user import User
 from sql import *
 
 #-----------   Functions used both in atm.py and admin.py modules ----#
@@ -176,10 +177,10 @@ def validate_pin(user_id, unhashed):
     Return "True" if they are identical, otherwise return "False."
     """
     user = get_user_info(user_id)
-    salt = user[4]
+    salt = user.salt
     new_key = hashlib.pbkdf2_hmac('sha256', unhashed.encode('utf-8'),
                                   salt, 100000, dklen=128)
-    if new_key == user[5]:
+    if new_key == user.key:
         return True
     else:
         return False

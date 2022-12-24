@@ -1,7 +1,6 @@
 """This module contains program for bank personnel to insert information
 of new customers and their accounts into database."""
 
-from sql import *
 import random
 from datetime import datetime
 import hashlib
@@ -10,7 +9,7 @@ import time
 from user import User
 from user_partial_info import UserPartialInfo
 from functions import *
-"""
+
 print("****************************")
 print("          Hello!")
 print("****************************\n")
@@ -119,3 +118,4 @@ user2 = UserPartialInfo("Katie", "Baker", "b", salt, key, '1000.00', '1000.00')
 user3 = UserPartialInfo("Jamie", "Adams", "c", salt, key, '1000.00', '1000.00')
 
 # create_new_accounts(user3)
+"""

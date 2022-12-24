@@ -1,7 +1,6 @@
 import sqlite3
 from datetime import datetime, timedelta
 import decimal
-from functions import *
 from user_partial_info import UserPartialInfo
 from user import User
 
@@ -302,13 +301,24 @@ def create_new_accounts(user_info):
 def get_user_info(user_id):
     """
     Get user Info of the given user ID.
+
+    :argument: user_id: user ID
+    :return: user info of the given user ID, or "None" if there's no data with the ID.
+    :rtype: User or None
     """
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute("SELECT * FROM Users WHERE user_id = " + str(user_id))
-        user = c.fetchone()
-        return user
+        info_db = c.fetchone()
+        # Insert all info into class "User" object "user"
+        if info_db is None:
+            return None
+        else:
+            user = User(info_db[0], info_db[1], info_db[2], info_db[3],
+                        info_db[4], info_db[5], info_db[6], info_db[7],
+                        info_db[8])
+            return user
     except Exception as e:
         print("There was an error. "
               "The user information couldn't be acquired.")
@@ -362,45 +372,46 @@ def activate(user_id):
     finally:
         conn.close()
 
-def withdraw(amount, check_acct_id, user_id):
+def withdraw(amount, user):
     """
     Get the balance of the user from table "Accounts."
     If the balance is greater than "amount,"
-    subtract it by "amount" and set the new value to
+    subtract it by "amount" and set the new balance to
     "balance" in table "Accounts."
+
+    arguments:
+    amount -- amount of money to withdraw
+    user -- the user information
     """
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         # Get the balance of the user.
         c.execute("SELECT balance FROM Accounts WHERE acct_id = "
-                  + str(check_acct_id))
+                  + str(user.check_acct_id))
         old_balance = c.fetchone()
-        # Calculate the new balance.
-        new_balance = (D(old_balance[0]) - D(amount))
-        # If the new balance will be less than 0, print the message below
-        # and terminate the program.
-        if new_balance < 0:
+        # If the old balance is less than "amount," print
+        # the following message and terminate the program.
+        if to_decimal(old_balance[0]) < to_decimal(amount):
             print("No sufficient money in the account."
                   "The session will be terminated.")
             exit()
         else:
+            # Calculate the new balance.
+            new_balance = (to_decimal(old_balance[0]) - to_decimal(amount))
+            # Get the current date and time.
+            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # Update the balance in table "Accounts."
             c.execute('Begin')
             c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
-                      + "' WHERE acct_id = " + str(check_acct_id))
-            # Get the current date and time.
-            date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                      + "' WHERE acct_id = " + str(user.check_acct_id))
             # Insert the record of this transaction into table
             # "Transactions."
-            c.execute("INSERT INTO Transactions VALUES ("
-                      ":acct_id, :acct_type, :user_id, :trs_type,"
-                      ":trs_to_or_from, :trs_notes, :amount, :date"
-                      ")",
-                      {'acct_id': check_acct_id, 'acct_type': "checking",
-                       'user_id': user_id, 'trs_type': "withdrawal",
-                       'trs_to_or_from': "NA", 'trs_notes': "NA",
-                       'amount': "-" + amount, 'date': date})
+            amt_with_sign = "".join(["-", amount])
+            values = set_trans_values(user.check_acct_id, user.user_id,
+                                            "withdrawal", "NA", "NA",
+                                            amt_with_sign, date)
+            c.execute(sql_insert_transaction, values)
             conn.commit()
             print(f"\n${amount} has been withdrawn from your checking"
                   f"account.\nPlease take your money and card.")
