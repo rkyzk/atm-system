@@ -172,7 +172,7 @@ def validate_val(val):
     """
     Return "True" if the argument "val" is a non-zero
     whole number or a positive number with two decimal digits.
-    (e.g. '50', '50.00')
+    (e.g. '50' or '50.00')
 
     :argument: val: value to be validated
     :return: True or False
@@ -236,6 +236,7 @@ def print_row(transaction_list):
     """
     Using "display_with_spaces" function,
     print each row in the argument "list."
+
     :argument: transaction_list: list of transactions
     """
     for item in transaction_list:
@@ -247,6 +248,7 @@ def validate_len(length):
     Have the users input notes and check the length.
     If the length is equal to or less than 35 characters,
     return the input.  Otherwise prompt them to reenter notes.
+
     :argument: length: max number of characters in trsfer notes
     :return: trs_notes: transfer notes
     :rtype: str

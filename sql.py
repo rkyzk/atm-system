@@ -6,15 +6,16 @@ from decimal import Decimal
 import sqlite3
 
 # Set SQL "Insert" queries for different tables into variables.
-sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, " \
-                  ":key, :svg_acct_id, :check_acct_id, :flag)"
+sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, "
+                  ":salt, :key, :svg_acct_id, :check_acct_id, :flag)"
 
-sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, :holder, " \
-                     ":bank, :acct_type, :balance)"
+sql_insert_account = "INSERT INTO Accounts VALUES (:acct_id, :user_id, "
+                     ":holder, :bank, :acct_type, :balance)"
 
-sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, :acct_type, " \
-                         ":user_id, :trs_type, :trs_to_or_from, :trs_notes, " \
-                         ":amount, :date)"
+sql_insert_transaction = "INSERT INTO Transactions VALUES (:acct_id, "
+                         ":acct_type, :user_id, :trs_type, :trs_to_or_from, "
+                         ":trs_notes, :amount, :date)"
+
 
 def create_table_users():
     """Create table "Users" for storing information of users."""
@@ -40,6 +41,7 @@ def create_table_users():
     finally:
         conn.close()
 
+
 def create_table_accounts():
     """Create table "Accounts" for storing information accounts."""
     try:
@@ -60,6 +62,7 @@ def create_table_accounts():
         exit()
     finally:
         conn.close()
+
 
 def create_table_transactions():
     """Create Table "Transactions" for storing transaction records."""
@@ -84,13 +87,15 @@ def create_table_transactions():
     finally:
         conn.close()
 
+
 def print_with_linebreaks(item_list):
     """Print each item in the list in a new line.
-    
+
     :argument: item_list: list holding entries in a table
     """
     for row in list:
         print(row)
+
 
 def print_tables():
     """Print tables 'Users,' 'Accounts' and 'Transactions'"""
@@ -115,6 +120,7 @@ def print_tables():
         exit()
     finally:
         conn.close()
+
 
 def get_user_id(code):
     """
@@ -152,6 +158,7 @@ def get_user_id(code):
     finally:
         conn.close()
 
+
 def get_acct_ids(code):
     """
     Get a list of savings and checking account IDs,
@@ -163,7 +170,8 @@ def get_acct_ids(code):
     :rtype: list
     """
     if code == "a":
-        # Store the prefixes of savings and checking account IDs of North Bank.
+        # Store the first two numbers of savings and checking account IDs of
+        # North Bank.
         sql_var = ["'11%'", "'12%'"]
         letter = "1"
     elif code == "b":
@@ -202,6 +210,7 @@ def get_acct_ids(code):
     finally:
         conn.close()
 
+
 def set_user_values(user):
     """
     set dictionary holding variables to be inserted into sql queries
@@ -209,13 +218,14 @@ def set_user_values(user):
 
     :argument: user information
     :return: a set of variables to be set to sql query
-    :rtype: dictionary    
+    :rtype: dictionary
     """
     values = {'fname': user.fname, 'lname': user.lname, 'bank': user.bank,
-            'user_id': user.user_id, 'salt': user.salt, 'key': user.key,
-            'svg_acct_id': user.svg_acct_id,
-            'check_acct_id': user.check_acct_id, 'flag': 'a'}
+              'user_id': user.user_id, 'salt': user.salt, 'key': user.key,
+              'svg_acct_id': user.svg_acct_id,
+              'check_acct_id': user.check_acct_id, 'flag': 'a'}
     return values
+
 
 def set_account_values(user, acct_id, balance):
     """
@@ -226,34 +236,37 @@ def set_account_values(user, acct_id, balance):
                acct_id: account ID
                balance: balance
     :return: a set of variables to be set to sql query
-    :rtype: dictionary    
+    :rtype: dictionary
     """
     if str(acct_id)[1] == "1":
         values = {'acct_id': user.svg_acct_id, 'user_id': user.user_id,
-                  'holder': " ".join([user.fname, user.lname]), 'bank': user.bank,
-                  'acct_type': "savings", 'balance': balance}
+                  'holder': " ".join([user.fname, user.lname]),
+                  'bank': user.bank, 'acct_type': "savings",
+                  'balance': balance}
     else:
         values = {'acct_id': user.check_acct_id, 'user_id': user.user_id,
-                  'holder': " ".join([user.fname, user.lname]), 'bank': user.bank,
-                  'acct_type': "checking", 'balance': balance}
+                  'holder': " ".join([user.fname, user.lname]),
+                  'bank': user.bank, 'acct_type': "checking",
+                  'balance': balance}
     return values
 
+
 def set_trans_values(acct_id, user_id, trs_type, trs_to_or_from,
-                                trs_notes, amount, date):
+                     trs_notes, amount, date):
     """
     set dictionary holding variables to be inserted into sql queries
     for table "Transactions."
 
     :argument: acct_id: account ID
                user_id: user ID
-               trs_type: kind of transaction 
-               trs_to_or_from: in case of a transfer, 
+               trs_type: kind of transaction
+               trs_to_or_from: in case of a transfer,
                                to/from whom the transfer is made
                amount: amount of transaction
-               date: the date & time of the transaction 
+               date: the date & time of the transaction
 
     :return: a set of variables to be set to sql query
-    :rtype: dictionary    
+    :rtype: dictionary
     """
     if str(acct_id)[1] == "1":
         values = {'acct_id': acct_id, 'acct_type': "savings",
@@ -266,6 +279,7 @@ def set_trans_values(acct_id, user_id, trs_type, trs_to_or_from,
                   'trs_to_or_from': trs_to_or_from,
                   'trs_notes': trs_notes, 'amount': amount, 'date': date}
     return values
+
 
 def create_new_accounts(user_info):
     """
@@ -322,12 +336,14 @@ def create_new_accounts(user_info):
     finally:
         conn.close()
 
+
 def get_user_info(user_id):
     """
     Get user Info of the given user ID.
 
     :argument: user_id: user ID
-    :return: user info of the given user ID, or "None" if there's no data with the ID.
+    :return: user info of the given user ID, or "None" if there's no data
+             with the ID.
     :rtype: User or None
     """
     try:
@@ -350,6 +366,7 @@ def get_user_info(user_id):
         exit()
     finally:
         conn.close()
+
 
 def deactivate(user_id):
     """
@@ -375,6 +392,7 @@ def deactivate(user_id):
     finally:
         conn.close()
 
+
 def activate(user_id):
     """
     Activate the card by setting the flag value back to
@@ -398,6 +416,7 @@ def activate(user_id):
         exit()
     finally:
         conn.close()
+
 
 def withdraw(amount, user):
     """
@@ -435,8 +454,8 @@ def withdraw(amount, user):
             # "Transactions."
             amt_with_sign = "".join(["-", amount])
             values = set_trans_values(user.check_acct_id, user.user_id,
-                                            "withdrawal", "NA", "NA",
-                                            amt_with_sign, date)
+                                      "withdrawal", "NA", "NA",
+                                      amt_with_sign, date)
             c.execute(sql_insert_transaction, values)
             conn.commit()
             print(f"\n${amount} has been withdrawn from your checking"
@@ -452,6 +471,7 @@ def withdraw(amount, user):
         exit()
     finally:
         conn.close()
+
 
 def deposit(amount, user):
     """
@@ -480,8 +500,8 @@ def deposit(amount, user):
         # Insert the record of the transaction into table "Transactions."
         amt_with_sign = "".join(["+", amount])
         values = set_trans_values(user.check_acct_id, user.user_id,
-                                        "deposit", "NA", "NA",
-                                        amt_with_sign, date)
+                                  "deposit", "NA", "NA",
+                                  amt_with_sign, date)
         c.execute(sql_insert_transaction, values)
         conn.commit()
         print(f"${amount} has been added to your checking account.")
@@ -496,6 +516,7 @@ def deposit(amount, user):
         exit()
     finally:
         conn.close()
+
 
 def get_recipient(recip_acct_id):
     """
@@ -588,8 +609,9 @@ def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
             # Add the record to table "Transactions."
             c.execute(sql_insert_transaction, values)
             # Update the recipient's account info.
-            c.execute("UPDATE Accounts SET balance = '" + str(recip_new_balance)
-                      + "' WHERE acct_id = " + recip_acct_id)
+            c.execute("UPDATE Accounts SET balance = '"
+                      + str(recip_new_balance) + "' WHERE acct_id = "
+                      + recip_acct_id)
             # Add the record to table "Transactions."
             c.execute(sql_insert_transaction, recip_values)
             conn.commit()
@@ -605,6 +627,7 @@ def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
         exit()
     finally:
         conn.close()
+
 
 def get_balances(user_id):
     """
@@ -630,6 +653,7 @@ def get_balances(user_id):
         exit()
     finally:
         conn.close()
+
 
 def get_transactions(user_id):
     """Get transaction records of the user in the past 30 days.
@@ -660,16 +684,3 @@ def get_transactions(user_id):
         exit()
     finally:
         conn.close()
-
-def update():                # cut this part later
-    conn = sqlite3.connect('bank.db')
-    c = conn.cursor()
-    c.execute("UPDATE Transactions SET user_id = 200001 "
-              "WHERE amount = '+10.00'")
-    conn.commit()
-    conn.close()
-
-#create_table_accounts()
-#create_table_users()
-#create_table_transactions()
-#print_tables()
