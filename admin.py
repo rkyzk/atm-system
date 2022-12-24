@@ -1,10 +1,13 @@
+"""This module contains program for bank personnel to insert information
+of new customers and their accounts into database."""
+
 from sql import *
 import random
 from datetime import datetime
 import hashlib
 import os
 import time
-from User import User
+from user import User
 from functions import *
 
 print("****************************")
@@ -13,9 +16,9 @@ print("****************************\n")
 print("This terminal is for creating new accounts.\n")
 time.sleep(1.5)
 # Collect the customer's first name and validate it.
-fname = collect_name("first name")
+fname = collect_name("Enter the customer's first name: ")
 # Collect the customer's first name and validate it.
-lname = collect_name("last name")
+lname = collect_name("Enter the customer's last name: ")
 # The customer's full name.
 holder = fname + " " + lname
 # Have the user select a bank.

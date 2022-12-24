@@ -52,31 +52,22 @@ def hash_pin_with_salt(pin, salt):
         )
     return key
 
-
-def validate_name(name):
-    """
-    Return True if the name string contains only alphabets.
-    Otherwise return False.
-    """
-    letters = name.replace(" ", "")
-    if letters.isalpha():
-        return True
-    else:
-        return False
-
 def collect_name(f_lname):
     """
-    Prompt the user to enter their first or last name.
-    If the input passes the validation by validate_name function,
-    return the input. If not, prompt the user to reenter their name.
+    Print prompt message and collect the customer's name.
+    If the input contains only alphabet, return the name as is.
+    If not, prompt the user to reenter the name.
+
+    :argument: f_lname: prompt message asking for first/last name
+    :return: validated name
+    :rtype: str
     """
     while True:
-        name = input(f"Enter the customer's {f_lname}: ")
-        if validate_name(name):
+        name = input(f_lname).replace(" ", "")
+        if name.isalpha():
             return name
         else:
             print("Invalid entry (enter only alphabets).")
-            continue
 
 def collect_bank_code():
     """
@@ -129,8 +120,7 @@ def print_data(user):
     print(f"Savings Account: ${user.svg_dp}")
     print(f"Checking Account: ${user.check_dp}\n")
 
-
-    -------
+#-----------   Functions used in atm.py.   --------------#
 def validate_transfer_val(val):
     """
     Return "True" if the argument "val" is a non-zero
