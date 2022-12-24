@@ -123,6 +123,13 @@ while True:
                     # Collect transfer amount.
                     amount = collect_val("Enter the amount "
                                          "you will transfer: ")
+                    # If there isn't enough money in the account,
+                    # print the note below and terminate the program.
+                    if not check_balance(acct_id, amount):
+                        print("You don't have sufficient money in your"
+                              "account to make this transfer.\n"
+                              "The program will be terminated.")
+                        exit()
                     # Have the users enter transfer notes (max 35
                     # characters).  Let them reenter the text if
                     # the length exceeds 35 characters.

@@ -545,6 +545,35 @@ def get_recipient(recip_acct_id):
         conn.close()
 
 
+def check_balance(acct_id, amount):
+    """Return True if the balance of the given account is greater than 'amount.'
+
+    :arguments: acct_id: account ID
+                amount: amount to be transferred
+    :return: True or False
+    :rtype: boolean
+    """
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        # Get the balance of the account ID.
+        c.execute("SELECT balance FROM Accounts WHERE acct_id = "
+                  + str(acct_id))
+        old_balance = c.fetchone()
+        if Decimal(old_balance[0]) >= Decimal(amount):
+            return True
+        else:
+            return False
+    except Exception as e:
+        # In case of an error, roll back if there's a connection,
+        # print an error message and terminate the program.
+        print("\nThere was an error.  The data couldn't be acquired.")
+        print(e)
+        exit()
+    finally:
+        conn.close()
+
+
 def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
     """
     Get the balance of the sender. If the balance is less than "amount,"
