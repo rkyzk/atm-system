@@ -1,14 +1,11 @@
+
 """This module contains program for bank personnel to insert information
 of new customers and their accounts into database."""
 
-import random
-from datetime import datetime
-import hashlib
-import os
-import time
-from user import User
 from user_partial_info import UserPartialInfo
 from functions import *
+import os
+import time
 
 print("****************************")
 print("          Hello!")
@@ -78,44 +75,32 @@ while True:
             choice = input("Enter a-f: ").lower()
             # Let the user make changes in the customer's information.
             if choice == 'a':
-                fname = collect_name("Enter the customer's " \
+                fname = collect_name("Enter the customer's "
                                      "correct first name: ")
                 break
             if choice == 'b':
-                lname = collect_name("Enter the customer's " \
+                lname = collect_name("Enter the customer's "
                                      "correct last name: ")
                 break
             if choice == 'c':
                 bank_code = collect_bank_code()
                 break
             if choice == 'd':
-                svg_dp = collect_mult_of_10("Enter initial deposit in " \
-                                            "savings account in " \
+                svg_dp = collect_mult_of_10("Enter initial deposit in "
+                                            "savings account in "
                                             "a multiple of 10: ")
                 break
             if choice == 'e':
-                check_dp = collect_mult_of_10("Enter initial deposit in " \
-                                              "checking account in " \
+                check_dp = collect_mult_of_10("Enter initial deposit in "
+                                              "checking account in "
                                               "a multiple of 10: ")
                 break
             if choice == 'f':
                 break
             else:
                 print("\nInvalid entry. Please try again.")
-            
 # Store all user info in a User class object named "user."
-user_partial_info = UserPartialInfo(fname, lname, bank_code, salt, key, svg_dp, check_dp)
+user_partial_info = UserPartialInfo(fname, lname, bank_code, salt, key,
+                                    svg_dp, check_dp)
 # Insert the data into DB.
 create_new_accounts(user_partial_info)
-
-"""
-salt = os.urandom(32)
-pin = "111111"
-key = hash_pin_with_salt(pin, salt)
-
-user1 = UserPartialInfo("John", "Smith", "a", salt, key, '1000.00', '1000.00')
-user2 = UserPartialInfo("Katie", "Baker", "b", salt, key, '1000.00', '1000.00')
-user3 = UserPartialInfo("Jamie", "Adams", "c", salt, key, '1000.00', '1000.00')
-
-# create_new_accounts(user3)
-"""

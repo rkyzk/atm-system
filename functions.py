@@ -5,13 +5,14 @@ import hashlib
 from user import User
 from sql import *
 
-#-----------   Functions used both in atm.py and admin.py modules ----#
+# -----------   Functions used both in atm.py and admin.py modules ----
+
+
 def collect_mult_of_10(msg):
     """
     Print the content of "msg" and prompt users to enter a value.
     If the input is a multiple of 10, add two decimal digits ".00"
     and return the value.
-
     :argument: msg: prompt message
     :returns: validated value added with two decimal digits ".00"
     :rtype: str
@@ -24,10 +25,12 @@ def collect_mult_of_10(msg):
         else:
             print("\nInvalid entry.")
 
-#-----------   Functions used in admin.py.   --------------#
+# -----------   Functions used in admin.py.   --------------
+
+
 def get_pin():
     """Generate a random 6-digit pin and return it.
-    
+
     :return: pin: pin number
     :rtype: str
     """
@@ -36,9 +39,10 @@ def get_pin():
         str_pin += str(random.randrange(10))
     return str_pin
 
+
 def hash_pin_with_salt(pin, salt):
     """Hash the pin with a given salt and return the key.
-    
+
     :argument: pin
                salt
     :return: key
@@ -52,6 +56,7 @@ def hash_pin_with_salt(pin, salt):
         dklen=128  # get a 128-byte key
         )
     return key
+
 
 def collect_name(f_lname):
     """
@@ -70,6 +75,7 @@ def collect_name(f_lname):
         else:
             print("Invalid entry (enter only alphabets).")
 
+
 def collect_bank_code():
     """Have the user select the bank and return the code.
 
@@ -84,6 +90,7 @@ def collect_bank_code():
             return code
         else:
             print("\nInvalid entry.")
+
 
 def get_bank(code):
     """
@@ -101,6 +108,7 @@ def get_bank(code):
         bank = "South Bank"
     return bank
 
+
 def print_data(fname, lname, bank_code, svg_dp, check_dp):
     """Print the information of the given user.
 
@@ -116,7 +124,9 @@ def print_data(fname, lname, bank_code, svg_dp, check_dp):
     print(f"Savings Account: ${svg_dp}")
     print(f"Checking Account: ${check_dp}\n")
 
-#-----------   Functions used in atm.py.   --------------#
+# -----------   Functions used in atm.py.   --------------
+
+
 def validate_pin(user_id, unhashed):
     """
     Get the salt and the stored key for the given user ID from the database,
@@ -137,6 +147,7 @@ def validate_pin(user_id, unhashed):
     else:
         return False
 
+
 def check_id(msg, length):
     """
     Prompt the users to enter a number and check if the input
@@ -155,6 +166,7 @@ def check_id(msg, length):
                 return id
         else:
             print("Please enter a valid ID.")
+
 
 def validate_val(val):
     """
@@ -178,6 +190,7 @@ def validate_val(val):
     else:
         return False
 
+
 def collect_val(msg):
     """
     Print "msg" and have the users input a value and validate it
@@ -197,17 +210,17 @@ def collect_val(msg):
             if value.isdigit():
                 decimal_val = value + ".00"
                 return decimal_val
-            else: 
+            else:
                 return value
         else:
             print("Invalid entry.  Enter values with or without "
                   "number of cents (e.g. '50' or '50.00').")
 
+
 def display_with_spaces(item_list):
     """
     Print items in the argument "list" with the numbers of spaces
     indicated in "list_num."
-
     :argument: item_list: a record in transaction history
     """
     list_num = [25, 20, 30, 35, 10]
@@ -218,22 +231,22 @@ def display_with_spaces(item_list):
         str = "".join([str, item + space*num])
     print(str)
 
+
 def print_row(transaction_list):
     """
     Using "display_with_spaces" function,
     print each row in the argument "list."
-
     :argument: transaction_list: list of transactions
     """
     for item in transaction_list:
         display_with_spaces(item)
+
 
 def validate_len(length):
     """
     Have the users input notes and check the length.
     If the length is equal to or less than 35 characters,
     return the input.  Otherwise prompt them to reenter notes.
-
     :argument: length: max number of characters in trsfer notes
     :return: trs_notes: transfer notes
     :rtype: str

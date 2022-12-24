@@ -1,11 +1,9 @@
-import sqlite3
 from datetime import datetime, timedelta
-import decimal
 from user_partial_info import UserPartialInfo
 from user import User
-
-#
-to_decimal = decimal.Decimal
+import decimal
+from decimal import Decimal
+import sqlite3
 
 # Set SQL "Insert" queries for different tables into variables.
 sql_insert_user = "INSERT INTO Users VALUES (:fname, :lname, :bank, :user_id, :salt, " \
@@ -420,13 +418,13 @@ def withdraw(amount, user):
         old_balance = c.fetchone()
         # If the old balance is less than "amount," print
         # the following message and terminate the program.
-        if to_decimal(old_balance[0]) < to_decimal(amount):
+        if Decimal(old_balance[0]) < Decimal(amount):
             print("No sufficient money in the account."
                   "The session will be terminated.")
             exit()
         else:
             # Calculate the new balance.
-            new_balance = (to_decimal(old_balance[0]) - to_decimal(amount))
+            new_balance = (Decimal(old_balance[0]) - Decimal(amount))
             # Get the current date and time.
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             # Update the balance in table "Accounts."
@@ -472,7 +470,7 @@ def deposit(amount, user):
                   + str(user.check_acct_id))
         old_balance = c.fetchone()
         # Calculate the new balance.
-        new_balance = to_decimal(old_balance[0]) + to_decimal(amount)
+        new_balance = Decimal(old_balance[0]) + Decimal(amount)
         # Get the current date and time.
         date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # Update the balance in table "Accounts."
@@ -564,21 +562,20 @@ def transfer(user, acct_id, amount, recipient, recip_acct_id, trs_notes):
         old_balance = c.fetchone()
         # If the sender doesn't have enough money in the account,
         # print the message below and terminate the program.
-        if to_decimal(old_balance[0]) < to_decimal(amount):
+        if Decimal(old_balance[0]) < Decimal(amount):
             print("You don't have sufficient money in your account to "
                   "make this transfer.\nThe program will be terminated.")
             exit()
         else:
             # Calculate the new balance of the sender.
-            new_balance = to_decimal(old_balance[0]) - to_decimal(amount)
+            new_balance = Decimal(old_balance[0]) - Decimal(amount)
             # Get the balance and user_id of the recipient.
             c.execute("SELECT user_id, balance FROM Accounts WHERE acct_id = "
                       + recip_acct_id)
             recip_info = c.fetchone()
             recip_user_id, recip_old_balance = recip_info
             # Calculate the new balance of the recipient.
-            recip_new_balance = to_decimal(recip_old_balance) \
-                                + to_decimal(amount)
+            recip_new_balance = Decimal(recip_old_balance) + Decimal(amount)
             amt_plus = "".join(["+", amount])
             recip_values = set_trans_values(int(recip_acct_id), recip_user_id,
                                             "transfer received",

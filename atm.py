@@ -93,7 +93,7 @@ while True:
                 # Have the users enter the recipient's account ID
                 # and check the validity of the input.
                 recip_acct_id = check_id("\nEnter the recipient's "
-                                                "account ID: ", 8)
+                                         "account ID: ", 8)
                 # Get the recipient's name from DB.
                 recipient = get_recipient(recip_acct_id)
                 # If the account ID is not found in DB, print the notes below.
@@ -134,8 +134,9 @@ while True:
                 while True:
                     # Ask the users if the transfer can be carried out,
                     # or they want to make changes.
-                    option = input("\nEnter 'a' to proceed with this transfer,\n"
-                                   "enter 'b' to make changes: ").lower()
+                    option = input("\nEnter 'a' to proceed with this "
+                                   "transfer,\nenter 'b' to make "
+                                   "changes: ").lower()
                     if option in ["a", "b"]:
                         break
                     else:
@@ -198,7 +199,7 @@ while True:
             print_row(check_list)
             print(f"\n{space*78}**Current balance:"
                   f"{space*14}${check_balance}\n")
-            break      
+            break
         if choice == "f":  # Exit
             print("Bye.  Have a nice day!")
             exit()
@@ -218,4 +219,3 @@ while True:
             break
         else:
             print("Invalid entry.  Please enter 'y' or 'n'")
-            continue
