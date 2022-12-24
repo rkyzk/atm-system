@@ -68,11 +68,11 @@ while True:
         if choice == "b":         # Deposit
             # In real setting the users will insert money, and the machine
             # will count the value, but in this program, let the users enter
-            # the value.
-            amount = collect_val('Enter the amount of money you are '
-                                 'depositing in a multiple of 10: $')
+            # the value they are depositing.
+            amount = collect_mult_of_10('Enter the amount of money you are '
+                                        'depositing in a multiple of 10: $')
             # Update the balance and transaction history of the user.
-            deposit(amount, check_acct_id, user_id)
+            deposit(amount, user)
             break
         if choice == "c":         # Transfer
             while True:

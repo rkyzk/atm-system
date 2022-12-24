@@ -379,9 +379,8 @@ def withdraw(amount, user):
     subtract it by "amount" and set the new balance to
     "balance" in table "Accounts."
 
-    arguments:
-    amount -- amount of money to withdraw
-    user -- the user information
+    :arguments: amount: amount of money to withdraw
+                user: the user information
     """
     try:
         conn = sqlite3.connect('bank.db')
@@ -427,36 +426,36 @@ def withdraw(amount, user):
     finally:
         conn.close()
 
-def deposit(amount, check_acct_id, user_id):
+def deposit(amount, user):
     """
     Get the balance of the user from table "Accounts."
     Add "amount" to the balance, update the balance
     and insert the record into table "Transactions."
+
+    :argument: amount: amount of money to deposit
+               user: user information
     """
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         # Get the balance of the user.
         c.execute("SELECT balance FROM Accounts WHERE acct_id = "
-                  + str(check_acct_id))
+                  + str(user.check_acct_id))
         old_balance = c.fetchone()
         # Calculate the new balance.
-        new_balance = D(old_balance[0]) + D(amount)
+        new_balance = to_decimal(old_balance[0]) + to_decimal(amount)
+        # Get the current date and time.
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         # Update the balance in table "Accounts."
         c.execute('Begin')
         c.execute("UPDATE Accounts SET balance = '" + str(new_balance)
-                  + "' WHERE acct_id = " + str(check_acct_id))
-        # Get the current date and time.
-        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                  + "' WHERE acct_id = " + str(user.check_acct_id))
         # Insert the record of the transaction into table "Transactions."
-        c.execute("INSERT INTO Transactions VALUES ("
-                  ":acct_id, :acct_type, :user_id, :trs_type, "
-                  ":trs_to_or_from, :trs_notes, :amount, :date"
-                  ")",
-                  {'acct_id': check_acct_id, 'acct_type': "checking",
-                   'user_id': user_id, 'trs_type': "deposit",
-                   'trs_to_or_from': "NA", 'trs_notes': "NA",
-                   'amount': "+" + amount, 'date': date})
+        amt_with_sign = "".join(["+", amount])
+        values = set_trans_values(user.check_acct_id, user.user_id,
+                                        "deposit", "NA", "NA",
+                                        amt_with_sign, date)
+        c.execute(sql_insert_transaction, values)
         conn.commit()
         print(f"${amount} has been added to your checking account.")
     except Exception as e:
