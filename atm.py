@@ -12,7 +12,7 @@ print("*****************")
 while True:
     # Let the users enter their IDs and check if the input is
     # a 7-digit whole number starting with bank code 1, 2 or 3.
-    user_id = check_num_input("Enter your user ID: ", 7)
+    user_id = check_id("Enter your user ID: ", 7)
     # Get user info of the given ID from DB.
     # If no user with the ID is found, have the users reenter their IDs.
     user = get_user_info(int(user_id))
@@ -92,7 +92,7 @@ while True:
             while True:
                 # Have the users enter the recipient's account ID
                 # and check the validity of the input.
-                recip_acct_id = check_num_input("\nEnter the recipient's "
+                recip_acct_id = check_id("\nEnter the recipient's "
                                                 "account ID: ", 8)
                 # Get the recipient's name from DB.
                 recipient = get_recipient(recip_acct_id)

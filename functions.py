@@ -101,30 +101,6 @@ def get_bank(code):
         bank = "South Bank"
     return bank
 
-def get_ids(code):
-    """
-    Get the bank name, a user ID, savings account ID
-    and checking account ID for a new customer based on the bank code.
-    """
-    # Assign the bank name to variable 'bank'.
-    if code == "a":
-        bank = "North Bank"
-    if code == "b":
-        bank = "East Bank"
-    if code == "c":
-        bank = "South Bank"
-    # Search the database and get the next available user ID.
-    user_id = get_user_id(code)
-    # Get the next available savings and checking account IDs.
-    new_accts = get_acct_ids(code)
-    acct_info = []
-    # Store the bank name and IDs in the list
-    # "account_info," and return the list
-    acct_info.append(bank)
-    acct_info.append(user_id)
-    acct_info.append(new_accts)
-    return acct_info
-
 def print_data(fname, lname, bank_code, svg_dp, check_dp):
     """Print the information of the given user.
 
@@ -146,6 +122,11 @@ def validate_pin(user_id, unhashed):
     Get the salt and the stored key for the given user ID from the database,
     hash the argument "unhashed," and compare the new key with the stored key.
     Return "True" if they are identical, otherwise return "False."
+
+    :arguments: user_id: user ID
+                unhashed: pin that was entered by the user
+    :return: True or False
+    :rtype: boolean
     """
     user = get_user_info(user_id)
     salt = user.salt
@@ -156,7 +137,7 @@ def validate_pin(user_id, unhashed):
     else:
         return False
 
-def check_num_input(msg, length):
+def check_id(msg, length):
     """
     Prompt the users to enter a number and check if the input
     is a whole number with the specified number of digits
@@ -168,10 +149,10 @@ def check_num_input(msg, length):
     :rtype: str
     """
     while True:
-        num = input(msg)
-        if num.isdigit() and len(num) == length:
-            if num[0] in ["1", "2", "3"]:
-                return num
+        id = input(msg)
+        if id.isdigit() and len(id) == length:
+            if id[0] in ["1", "2", "3"]:
+                return id
         else:
             print("Please enter a valid ID.")
 
@@ -179,7 +160,7 @@ def validate_val(val):
     """
     Return "True" if the argument "val" is a non-zero
     whole number or a positive number with two decimal digits.
-    (e.g. '50' or '50.00')
+    (e.g. '50', '50.00')
 
     :argument: val: value to be validated
     :return: True or False
@@ -212,49 +193,55 @@ def collect_val(msg):
     """
     while True:
         value = input(msg)
-        if not validate_val(value):
-            print("Invalid entry. Enter values with or without "
-                  "number of cents (e.g. '50' or '50.00').")
-            continue
-        elif value.isdigit():
-            decimal_val = value + ".00"
-            return decimal_val
+        if validate_val(value):
+            if value.isdigit():
+                decimal_val = value + ".00"
+                return decimal_val
+            else: 
+                return value
         else:
-            return value
+            print("Invalid entry.  Enter values with or without "
+                  "number of cents (e.g. '50' or '50.00').")
 
-def display_with_spaces(list):
+def display_with_spaces(item_list):
     """
     Print items in the argument "list" with the numbers of spaces
     indicated in "list_num."
+
+    :argument: item_list: a record in transaction history
     """
     list_num = [25, 20, 30, 35, 10]
     str = ""
-    for n, item in enumerate(list):
+    for n, item in enumerate(item_list):
         space = " "
         num = list_num[n] - len(item)
-        str += item + space*num
+        str = "".join([str, item + space*num])
     print(str)
 
-def print_row(list):
+def print_row(transaction_list):
     """
     Using "display_with_spaces" function,
     print each row in the argument "list."
+
+    :argument: transaction_list: list of transactions
     """
-    for item in list:
+    for item in transaction_list:
         display_with_spaces(item)
 
-def validate_len(num):
+def validate_len(length):
     """
     Have the users input notes and check the length.
     If the length is equal to or less than 35 characters,
     return the input.  Otherwise prompt them to reenter notes.
+
+    :argument: length: max number of characters in trsfer notes
+    :return: trs_notes: transfer notes
+    :rtype: str
     """
     while True:
         trs_notes = input(f"Enter transfer notes (optional, "
-                          f"max {num} characters): ")
-        if len(trs_notes) <= num:
+                          f"max {length} characters): ")
+        if len(trs_notes) <= length:
             return trs_notes
         else:
-            print(f"\nYou entered more than {num} characters.")
-            continue
-
+            print(f"\nYou entered more than {length} characters.")
