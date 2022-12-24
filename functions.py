@@ -70,18 +70,35 @@ def collect_name(f_lname):
             print("Invalid entry (enter only alphabets).")
 
 def collect_bank_code():
-    """
-    Have the user select the bank and return the code.
-    :return: code -- bank code                    #??
+    """Have the user select the bank and return the code.
+
+    :return: code: bank code
+    :rtype: str
     """
     while True:
         print("Enter 'a' for North Bank\n'b' for East Bank\n"
               "'c' for South Bank.")
-        code = input("Your input: ").lower()        # The bank code
-        if code not in ["a", "b", "c"]:
+        code = input("Your input: ").lower().replace(" ", "")  # The bank code
+        if code in ["a", "b", "c"]:
+            return code
+        else:
             print("\nInvalid entry.")
-            continue
-    return code
+
+def get_bank(code):
+    """
+    Return the bank name for the given code.
+
+    :argument: code: bank code
+    :return: bank: bank name
+    :rtype: str
+    """
+    if code == "a":
+        bank = "North Bank"
+    elif code == "b":
+        bank = "East Bank"
+    else:
+        bank = "South Bank"
+    return bank
 
 def get_ids(code):
     """
@@ -107,18 +124,20 @@ def get_ids(code):
     acct_info.append(new_accts)
     return acct_info
 
-def print_data(user):
+def print_data(fname, lname, bank_code, svg_dp, check_dp):
+    """Print the information of the given user.
+
+    :argument: fname: first name
+               lname: last name
+               bank_code: bank code
+               svg_dp: deposit value in savings account
+               check_dp: deposit value in checking account
     """
-    Print the information of the given user.
-    """
-    print(f"Name: {user.fname} {user.lname}")
-    print(f"User ID: {user.user_id}")
-    print(f"Bank Name: {user.bank}")
-    print(f"Savings Account ID: {user.svg_acct_id}")
-    print(f"Checking Account ID: {user.check_acct_id}")
+    print(f"Name: {fname} {lname}")
+    print(f"Bank Name: {get_bank(bank_code)}")
     print(f"--Initial Deposits--")
-    print(f"Savings Account: ${user.svg_dp}")
-    print(f"Checking Account: ${user.check_dp}\n")
+    print(f"Savings Account: ${svg_dp}")
+    print(f"Checking Account: ${check_dp}\n")
 
 #-----------   Functions used in atm.py.   --------------#
 def validate_transfer_val(val):

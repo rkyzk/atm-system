@@ -20,15 +20,15 @@ fname = collect_name("Enter the customer's first name: ")
 # Collect the customer's first name and validate it.
 lname = collect_name("Enter the customer's last name: ")
 # The customer's full name.
-holder = fname + " " + lname
+holder = " ".join([fname, lname])
 # Have the user select a bank.
 print("\nAt which bank are you creating accounts?")
-# Get
-code = collect_bank_code()
+# Get the bank code
+bank_code = collect_bank_code()
 # Get user ID, account IDs and the bank name and store them
 # in the following variables.
-bank, user_id, new_accts = get_ids(code)
-svg_acct_id, check_acct_id = new_accts
+#bank, user_id, new_accts = get_ids(code)
+#svg_acct_id, check_acct_id = new_accts
 # Input initial deposit values for each account.
 svg_dp = collect_val("initial deposit in savings account")
 check_dp = collect_val("initial deposit in checking account")
@@ -39,17 +39,12 @@ key = hash_pin_with_salt(pin, salt)
 # In real situations the pin will be shown only to the customer,
 # but here, it will be printed so checkers can test the program.
 print(f"Pin: {pin}\n")
-# Get the current date time.
-date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-# Store all user info in a User class object named "user."
-user = User(fname, lname, holder, bank, user_id, salt, key, svg_acct_id,
-            check_acct_id, svg_dp, check_dp, date)
 while True:
     # Print the user information for confirmation before inserting it into DB.
     print("----------------------------------")
     print("Confirm the following information")
     print("----------------------------------")
-    print_data(user)
+    print_data(fname, lname, bank_code, svg_dp, check_dp)
     # Ask if the data can be stored as printed above or need to be changed.
     print("Would you like to \na: insert the above data into DB\n"
           "b: make changes, or\nc: terminate the session\n")

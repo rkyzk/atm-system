@@ -119,24 +119,31 @@ def delete_tables():
 
 def get_user_id(code):
     """
-    Get a list of existing user IDs of the bank of selection
+    Get a list of existing user IDs of the selected bank
     and return the next available ID for that bank.
     """
     if code == "a":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '1%'"
+        letter = "1"
     elif code == "b":
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '2%'"
+        letter = "2"
     else:
         sql = "SELECT user_id FROM Users WHERE user_id LIKE '3%'"
+        letter = "3"
     try:
         conn = sqlite3.connect('bank.db')
         c = conn.cursor()
         c.execute(sql)
         list = c.fetchall()
+        # If list is None, return
+        if list == []:
+            return int("".join([letter, "000001"]))
         # Return the highest number of existing IDs added by 1.
-        return max(list[0]) + 1
+        else:
+            return max(list[0]) + 1
     except Exception as e:
-        print("There was an error. The ID can't be acquired.")
+        print("There was an error. User ID can't be acquired.")
         print(e)
         exit()
     finally:
@@ -151,12 +158,15 @@ def get_acct_ids(code):
     if code == "a":
         # Store the prefixes of savings and checking account IDs of North Bank.
         sql_var = ["'11%'", "'12%'"]
+        letter = "1"
     elif code == "b":
         # Do the same for East Bank
         sql_var = ["'21%'", "'22%'"]
+        letter = "2"
     else:
         # Do the same for South Bank
         sql_var = ["'31%'", "'32%'"]
+        letter = "3"
     new_accts = []
     # In the first round of the for loop below, store the next available
     # savings account ID.
@@ -168,10 +178,18 @@ def get_acct_ids(code):
             sql = "SELECT acct_id FROM Accounts WHERE acct_id LIKE " + var
             c.execute(sql)
             list = c.fetchall()
-            new_accts.append(int((max(list))[0]) + 1)
-        return new_accts
+            if list == []:
+                break
+            else:
+                new_accts.append(int((max(list))[0]) + 1)
+        if new_accts != []:
+            return new_accts
+        else:
+            svg_acct_id = "".join([letter, "1000001"])
+            check_acct_id = "".join([letter, "2000001"])
+            return [int(svg_acct_id), int(check_acct_id)]
     except Exception as e:
-        print("There was an error. The IDs can't be acquired.")
+        print("There was an error. Account IDs can't be acquired.")
         print(e)
         exit()
     finally:
