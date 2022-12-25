@@ -109,14 +109,14 @@ D. View your balances
 E. View your transactions
 - The system will get a list of transaction records of the user from the previous 30 days.  The transaction histories of savings and checking accounts will be shown in separate tables.
 
-*I added transaction records dating from more than 30 days ago to account ID 32000001, so one can test if the program to select only the records in the past 30 days functions well.  (By calling function print_tables() in sql.py, all records in the tables will be displayed.)*
+*Notes for checkers: I added transaction records dating from more than 30 days ago to account ID 32000001 in order to test if the program to select only the records in the past 30 days functions well.  (By calling function print_tables() in sql.py, all records in the tables will be displayed.)*
 
 F. Exit
 - The program will be terminated.  
 
 Lastly, after each transaction, the system asks the users if they want to make further transactions.  Until they decide to exit the program, they can continue to make transactions.
 
-*For checkers of the program: I added one user at each bank, user_ID: 1000001, 2000001 and 3000001 for test purpose.  The pin number is 111111 for all three users.*
+*Another note for checkers: I added one user at each bank, user_ID: 1000001, 2000001 and 3000001 for test purpose.  The pin number is 111111 for all three users.*
 
 ## Notes on functions.py and sql.py
 I placed functions that make connections to database in sql.py and other functions in functions.py. 
