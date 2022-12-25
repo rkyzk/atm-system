@@ -28,6 +28,9 @@ def collect_mult_of_10(msg):
 # -----------   Functions used in admin.py.   --------------
 
 
+def validate_admin_pass(username, password):
+    pass
+
 def get_pin():
     """Generate a random 6-digit pin and return it.
 

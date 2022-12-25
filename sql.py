@@ -89,12 +89,13 @@ def create_table_transactions():
         conn.close()
 
 
-def print_with_linebreaks(item_list):
+def print_with_linebreaks(entry_list):
     """Print each item in the list in a new line.
 
-    :argument: item_list: list holding entries in a table
+    :argument: entry_list: list holding entries in a table
     """
-    for row in item_list:
+    print(type(entry_list))
+    for row in entry_list:
         print(row)
 
 
@@ -107,14 +108,14 @@ def print_tables():
                      check_acct_id, flag FROM Users""")
         print("Users")
         print_with_linebreaks(c.fetchall())
-        c.execute("SELECT * FROM Accounts")
-        print("-----------------------------")
-        print("Accounts")
-        print_with_linebreaks(c.fetchall())
-        c.execute("SELECT * FROM Transactions")
-        print("-----------------------------")
-        print("Transactions")
-        print_with_linebreaks(c.fetchall())
+        #c.execute("SELECT * FROM Accounts")
+        #print("-----------------------------")
+        #print("Accounts")
+        #print_with_linebreaks(c.fetchall())
+        #c.execute("SELECT * FROM Transactions")
+        #print("-----------------------------")
+        #print("Transactions")
+        #print_with_linebreaks(c.fetchall())
     except Exception as e:
         print("There was an error.  The data couldn't be acquired.")
         print(e)
@@ -122,6 +123,7 @@ def print_tables():
     finally:
         conn.close()
 
+print_tables()
 
 def get_user_id(bank):
     """

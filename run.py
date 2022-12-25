@@ -1,4 +1,3 @@
-
 """This module contains program for bank personnel to insert information
 of new customers and their accounts into database."""
 
@@ -6,6 +5,26 @@ from user_partial_info import UserPartialInfo
 from functions import *
 import os
 import time
+
+# Have the user login with a username and a password.
+# Validate the two inputs.  If login fails 3 times,
+# the program will be terminated.
+n = 0
+while n < 3:
+    username = input("Username: \n")
+    password = input("Password: \n")
+    if validate_admin_pass(username, password):
+        print("Login success")
+        break
+    else:
+        if n < 2:
+            print("The given username or the password is wrong.  "
+                  "Please try again.")
+            n += 1
+        else:
+            print("Login failed three times.  The program will be "
+                  "terminated.\nPlease reach out to authorized personnel.")
+            exit()
 
 print("****************************")
 print("          Hello!")
