@@ -5,8 +5,8 @@ Banking System Application is a Python terminal application.  It offers a termin
 ## Terminal for Bank Personnel (admin.py)
 ### What users can do
 - At this terminal the bank personnel can create accounts for their new customers.  
-
-- First the users (or bank personnel) will be greeted with a message “Hello!” and for clarity, the system ensures them that the terminal is for creating new accounts.  
+- First the users (or bank personnel) will need to login with a username “admin963” and a password “asdqwe”.
+- After logging in, the users will be greeted with a message “Hello!” and for clarity, the system ensures them that the terminal is for creating new accounts.  
 
 - The users will input:
 1. the customer’s first name
@@ -129,7 +129,6 @@ Class "User" is a class containing variables that correspond to the variables st
 
 ## Future features:
 - Currently I limited the length of transfer notes to 35 characters so the table of transaction history will not be distorted.  In the future, I will find a way to accommodate longer texts with line breaks in the column.  
-- I will make a login system for bank personnel with a username and pin validation.
 - I will add a program to reset pin numbers in case customers forget their pins.
 
 # Testing:
