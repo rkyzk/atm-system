@@ -130,6 +130,26 @@ def insert_admin_pass(name, key, salt):
         conn.close()
 
 
+def get_admin_pass_info(name):
+    """Gets administrator's key and salt from the database and returns them.
+
+    :return: tuple of key and salt
+    :rtype: tuple
+    """
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        c.execute("SELECT key, salt FROM Admin_Login WHERE username = '" + name + "'")
+        pass_tuple = c.fetchall()[0]
+        return pass_tuple
+    except Exception as e:
+        print("There was an error.  The data couldn't be acquired.")
+        print(e)
+        exit()
+    finally:
+        conn.close()
+
+
 def print_with_linebreaks(entry_list):
     """Print each item in the list in a new line.
 

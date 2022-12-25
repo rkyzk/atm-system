@@ -29,7 +29,22 @@ def collect_mult_of_10(msg):
 
 
 def validate_admin_pass(username, password):
-    pass
+    """Validate if the given combination of the username
+    and the key matches that stored in the database.
+
+    :arguments: username: given username
+                new_key: given key
+    :return: True or False
+    :rtype: boolean
+    """
+    if username == "admin963":
+        stored_key = get_admin_pass_info(username)[0]
+        salt = get_admin_pass_info(username)[1]
+        new_key = hash_pin_with_salt(password, salt)
+        if new_key == stored_key:
+            return True
+    return False
+
 
 def get_pin():
     """Generate a random 6-digit pin and return it.
