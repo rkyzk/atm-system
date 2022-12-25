@@ -89,6 +89,47 @@ def create_table_transactions():
         conn.close()
 
 
+def create_table_admin_pass():
+    """Creates a table that holds admin login information."""
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        with conn:
+            c.execute("""CREATE TABLE IF NOT EXISTS Admin_Login (
+                username text NOT NULL,
+                key text NOT NULL,
+                salt text NOT NULL
+                )""")
+    except Exception as e:
+        print("There was an error.  The table wasn't created.")
+        print(e)
+        exit()
+    finally:
+        conn.close()
+
+
+def insert_admin_pass(name, key, salt):
+    """Inserts a username, key and salt in table 'Admin_Login.'
+
+    :argument: name: username
+               key
+               salt
+    """
+    try:
+        conn = sqlite3.connect('bank.db')
+        c = conn.cursor()
+        values = {'username': name, 'key': key, 'salt': salt}
+        c.execute("INSERT INTO Admin_Login VALUES "
+                  "(:username, :key, :salt)", values)
+        conn.commit()
+    except Exception as e:
+        print("There was an error.  The data couldn't be inserted.")
+        print(e)
+        exit()
+    finally:
+        conn.close()
+
+
 def print_with_linebreaks(entry_list):
     """Print each item in the list in a new line.
 
@@ -108,14 +149,14 @@ def print_tables():
                      check_acct_id, flag FROM Users""")
         print("Users")
         print_with_linebreaks(c.fetchall())
-        #c.execute("SELECT * FROM Accounts")
-        #print("-----------------------------")
-        #print("Accounts")
-        #print_with_linebreaks(c.fetchall())
-        #c.execute("SELECT * FROM Transactions")
-        #print("-----------------------------")
-        #print("Transactions")
-        #print_with_linebreaks(c.fetchall())
+        c.execute("SELECT * FROM Accounts")
+        print("-----------------------------")
+        print("Accounts")
+        print_with_linebreaks(c.fetchall())
+        c.execute("SELECT * FROM Transactions")
+        print("-----------------------------")
+        print("Transactions")
+        print_with_linebreaks(c.fetchall())
     except Exception as e:
         print("There was an error.  The data couldn't be acquired.")
         print(e)
@@ -123,7 +164,6 @@ def print_tables():
     finally:
         conn.close()
 
-print_tables()
 
 def get_user_id(bank):
     """
