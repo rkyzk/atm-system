@@ -119,37 +119,36 @@ while True:
                           "you will make a transfer.\nPlease enter "
                           "the account ID of the recipient.")
                     continue
-                else:
-                    # Collect transfer amount.
-                    amount = collect_val("Enter the amount "
-                                         "you will transfer: \n")
-                    # If there isn't enough money in the account,
-                    # print the note below and terminate the program.
-                    if not check_balance(acct_id, amount):
-                        print("You don't have sufficient money in your "
-                              "account to make this transfer.\n"
-                              "The program will be terminated.")
-                        exit()
-                    # Have the users enter transfer notes (max 35
-                    # characters).  Let them reenter the text if
-                    # the length exceeds 35 characters.
-                    trs_notes = validate_len(35)
-                    # Print the transfer detail for confirmation.
-                    print(f"\nYou will transfer ${amount} to\n{recipient}\n"
-                          f"Account ID: {recip_acct_id}\n"
-                          f"Transaction notes: {trs_notes}")
-                while True:
-                    # Ask the users if the transfer can be carried out,
-                    # or they want to make changes.
-                    option = input("\nEnter 'a' to proceed with this "
-                                   "transfer,\nenter 'b' to make "
-                                   "changes: \n").lower()
-                    if option in ["a", "b"]:
-                        break
-                    else:
-                        print("Invalid entry")
-                if option == "a":
+            # Collect transfer amount.
+            amount = collect_val("Enter the amount "
+                                 "you will transfer: \n")
+            # If there isn't enough money in the account,
+            # print the note below and terminate the program.
+            if not check_balance(acct_id, amount):
+                print("You don't have sufficient money in your "
+                      "account to make this transfer.\n"
+                      "The program will be terminated.")
+                exit()
+            # Have the users enter transfer notes (max 35
+            # characters).  Let them reenter the text if
+            # the length exceeds 35 characters.
+            trs_notes = validate_len(35)
+            # Print the transfer detail for confirmation.
+            print(f"\nYou will transfer ${amount} to\n{recipient}\n"
+                  f"Account ID: {recip_acct_id}\n"
+                  f"Transaction notes: {trs_notes}")
+            while True:
+                # Ask the users if the transfer can be carried out,
+                # or they want to make changes.
+                option = input("\nEnter 'a' to proceed with this "
+                               "transfer,\nenter 'b' to make "
+                               "changes: \n").lower()
+                if option in ["a", "b"]:
                     break
+                else:
+                    print("Invalid entry")
+            if option == "a":
+                break
             # Make updates regarding this transfer in the DB
             transfer(user, acct_id, amount, recipient, recip_acct_id,
                      trs_notes)
@@ -211,8 +210,7 @@ while True:
             print("Bye.  Have a nice day!")
             exit()
         else:
-            print('Invalid entry.  Please try again.')
-            continue
+            print('Invalid entry.')
     while True:
         # Ask if the users want to make further transactions.
         # If they do, send them back to the selections of transactions.
