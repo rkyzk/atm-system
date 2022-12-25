@@ -126,7 +126,7 @@ while True:
                     # If there isn't enough money in the account,
                     # print the note below and terminate the program.
                     if not check_balance(acct_id, amount):
-                        print("You don't have sufficient money in your"
+                        print("You don't have sufficient money in your "
                               "account to make this transfer.\n"
                               "The program will be terminated.")
                         exit()

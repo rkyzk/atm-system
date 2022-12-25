@@ -94,7 +94,7 @@ def print_with_linebreaks(item_list):
 
     :argument: item_list: list holding entries in a table
     """
-    for row in list:
+    for row in item_list:
         print(row)
 
 
@@ -116,7 +116,7 @@ def print_tables():
         print("Transactions")
         print_with_linebreaks(c.fetchall())
     except Exception as e:
-        print("There was an error. The data couldn't be acquired.")
+        print("There was an error.  The data couldn't be acquired.")
         print(e)
         exit()
     finally:
@@ -327,7 +327,6 @@ def create_new_accounts(user_info):
                                   "deposit", "NA", "NA", amount, date)
         c.execute(sql_insert_transaction, values)
         conn.commit()
-        print("The data have been stored in the database.\n")
         return user_id
     except Exception as e:
         if conn:
