@@ -109,12 +109,14 @@ D. View your balances
 E. View your transactions
 - The system will get a list of transaction records of the user from the previous 30 days.  The transaction histories of savings and checking accounts will be shown in separate tables.
 
-- I added transaction records dating from October and November to account ID 32000001, so one can test if the program to restrict the records to the past 30 days function well.  (By calling function print_tables() in sql.py, all records in the tables will be displayed.)
+*I added transaction records dating from more than 30 days ago to account ID 32000001, so one can test if the program to select only the records in the past 30 days functions well.  (By calling function print_tables() in sql.py, all records in the tables will be displayed.)*
 
 F. Exit
 - The program will be terminated.  
 
-* After each transaction, the system asks the users if they want to make further transactions.  Until they decide to exit the program, they can continue to make transactions. 
+Lastly, after each transaction, the system asks the users if they want to make further transactions.  Until they decide to exit the program, they can continue to make transactions.
+
+*For checkers of the program: I added one user at each bank, user_ID: 1000001, 2000001 and 3000001 for test purpose.  The pin number is 111111 for all three users.*
 
 ## Notes on functions.py and sql.py
 I placed functions that make connections to database in sql.py and other functions in functions.py. 
@@ -128,7 +130,7 @@ Class "User" is a class containing variables that correspond to the variables st
 ## Future features:
 - Currently I limited the length of transfer notes to 35 characters so the table of transaction history will not be distorted.  In the future, I will find a way to accommodate longer texts with line breaks in the column.  
 - I will make a login system for bank personnel with a username and pin validation.
-- I will add a program to reset pin in case customers forget their pin numbers.
+- I will add a program to reset pin numbers in case customers forget their pins.
 
 # Testing:
 - I passed the code through CI Python Linter and confirmed there are no problems.
@@ -143,8 +145,17 @@ Earlier, in “admin.py,” I assigned user and account IDs right after the bank
 No errors were returned from https://pep8ci.herokuapp.com
 
 ## Deployment
+This project was deployed using Code Institute's mock terminal for Heroku.
+- Steps to deploy:
+1. Fork or clone the repository
+2. Create a new Heroku app
+3. Set the buildpacks to Python and NodeJS in the order
+4. Link the Heroku app to the repository
+5. Click on Deploy
 
 ## Credits:
 The code to hash the pin with salt was taken from the following site:
 
 [How To Hash Passwords In Python]https://nitratine.net/blog/post/how-to-hash-passwords-in-python/
+
+The section in this readme file "Deployment" was taken from the readme file of Love Sandwiches Project by Code Institute.
