@@ -13,9 +13,9 @@ print("****************************\n")
 print("This terminal is for creating new accounts.\n")
 time.sleep(1.5)
 # Collect the customer's first name and validate it.
-fname = collect_name("Enter the customer's first name: ")
+fname = collect_name("Enter the customer's first name: \n")
 # Collect the customer's first name and validate it.
-lname = collect_name("Enter the customer's last name: ")
+lname = collect_name("Enter the customer's last name: \n")
 # The customer's full name.
 holder = " ".join([fname, lname])
 # Have the user select a bank.
@@ -24,9 +24,9 @@ print("\nAt which bank are you creating accounts?")
 bank_code = collect_bank_code()
 # Input initial deposit values for each account.
 svg_dp = collect_mult_of_10("Enter initial deposit in savings account "
-                            "in a multiple of 10: ")
+                            "in a multiple of 10: \n")
 check_dp = collect_mult_of_10("Enter initial deposit in checking account "
-                              "in a multiple of 10: ")
+                              "in a multiple of 10: \n")
 # Get a pin & salt, and then hash the pin to get a key.
 pin = get_pin()
 salt = os.urandom(32)
@@ -43,7 +43,7 @@ while True:
     # Ask if the data can be stored as printed above or need to be changed.
     print("Would you like to \na: insert the above data into DB\n"
           "b: make changes, or\nc: terminate the session\n")
-    answer = input("Enter 'a', 'b' or 'c': ").lower()
+    answer = input("Enter 'a', 'b' or 'c': \n").lower()
     if answer not in ['a', 'b', 'c']:
         print("\nInvalid entry.  Please try again.")
         continue
@@ -56,7 +56,7 @@ while True:
         while True:
             print("Enter 'a' to terminate, "
                   "'b' to go back to the previous options.")
-            option = input("Your input: ").lower()
+            option = input("Your input: \n").lower()
             if option == "a":
                 print("\nBye.  Have a nice day!")
                 exit()
@@ -74,15 +74,15 @@ while True:
             print("d: Deposit value in savings account")
             print("e: Deposit value in checking account")
             print("f: Go back to the previous options\n")
-            choice = input("Enter a-f: ").lower()
+            choice = input("Enter a-f: \n").lower()
             # Let the user make changes in the customer's information.
             if choice == 'a':
                 fname = collect_name("Enter the customer's "
-                                     "correct first name: ")
+                                     "correct first name: \n")
                 break
             if choice == 'b':
                 lname = collect_name("Enter the customer's "
-                                     "correct last name: ")
+                                     "correct last name: \n")
                 break
             if choice == 'c':
                 bank_code = collect_bank_code()
@@ -90,12 +90,12 @@ while True:
             if choice == 'd':
                 svg_dp = collect_mult_of_10("Enter initial deposit in "
                                             "savings account in "
-                                            "a multiple of 10: ")
+                                            "a multiple of 10: \n")
                 break
             if choice == 'e':
                 check_dp = collect_mult_of_10("Enter initial deposit in "
                                               "checking account in "
-                                              "a multiple of 10: ")
+                                              "a multiple of 10: \n")
                 break
             if choice == 'f':
                 break

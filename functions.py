@@ -85,7 +85,7 @@ def collect_bank_code():
     while True:
         print("Enter 'a' for North Bank\n'b' for East Bank\n"
               "'c' for South Bank.")
-        code = input("Your input: ").lower().replace(" ", "")  # The bank code
+        code = input("Your input: \n").lower()  # The bank code
         if code in ["a", "b", "c"]:
             return code
         else:
@@ -255,7 +255,7 @@ def validate_len(length):
     """
     while True:
         trs_notes = input(f"Enter transfer notes (optional, "
-                          f"max {length} characters): ")
+                          f"max {length} characters): \n")
         if len(trs_notes) <= length:
             return trs_notes
         else:

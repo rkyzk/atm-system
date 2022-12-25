@@ -12,7 +12,7 @@ print("*****************")
 while True:
     # Let the users enter their IDs and check if the input is
     # a 7-digit whole number starting with bank code 1, 2 or 3.
-    user_id = check_id("Enter your user ID: ", 7)
+    user_id = check_id("Enter your user ID: \n", 7)
     # Get user info of the given ID from DB.
     # If no user with the ID is found, have the users reenter their IDs.
     user = get_user_info(int(user_id))
@@ -31,7 +31,7 @@ if user.flag == "s":
 # "s" -- "s" for "suspended")
 n = 0
 while n < 4:
-    unhashed = input('Enter your pin: ')
+    unhashed = input('Enter your pin: \n')
     if validate_pin(user_id, unhashed):
         print('\nLogin Success\n')
         break
@@ -58,10 +58,10 @@ while True:
     print('e. View your recent transactions (from the past 30 days')
     print('f. Exit\n')
     while True:
-        choice = input('Enter a-f: ').lower()
+        choice = input('Enter a-f: \n').lower()
         if choice == "a":         # Withdrawal
             amount = collect_mult_of_10("Enter how much you'd like "
-                                        "to withdraw in a multiple of 10: $")
+                                        "to withdraw in a multiple of 10: $\n")
             # Update the balance and transaction history of the user.
             withdraw(amount, user)
             break
@@ -70,7 +70,7 @@ while True:
             # will count the value, but in this program, let the users enter
             # the value they are depositing.
             amount = collect_mult_of_10('Enter the amount of money you are '
-                                        'depositing in a multiple of 10: $')
+                                        'depositing in a multiple of 10: $\n')
             # Update the balance and transaction history of the user.
             deposit(amount, user)
             break
@@ -80,7 +80,7 @@ while True:
                                "from your savings account,\n"
                                "or from your checking account?\n"
                                "Enter 'a' for savings account\n"
-                               "'b' for checking account: ").lower()
+                               "'b' for checking account: \n").lower()
                 if option == 'a':
                     acct_id = user.svg_acct_id
                     break
@@ -93,7 +93,7 @@ while True:
                 # Have the users enter the recipient's account ID
                 # and check the validity of the input.
                 recip_acct_id = check_id("\nEnter the recipient's "
-                                         "account ID: ", 8)
+                                         "account ID: \n", 8)
                 # Get the recipient's name from DB.
                 recipient = get_recipient(recip_acct_id)
                 # If the account ID is not found in DB, print the notes below.
@@ -102,7 +102,7 @@ while True:
                           "is not valid.")
                     while True:
                         option = input("Enter 'a' to abort the transaction, "
-                                       "'b' to continue: ").lower()
+                                       "'b' to continue: \n").lower()
                         if option == "a":
                             print("Bye.  Have a nice day!")
                             exit()
@@ -122,7 +122,7 @@ while True:
                 else:
                     # Collect transfer amount.
                     amount = collect_val("Enter the amount "
-                                         "you will transfer: ")
+                                         "you will transfer: \n")
                     # If there isn't enough money in the account,
                     # print the note below and terminate the program.
                     if not check_balance(acct_id, amount):
@@ -143,7 +143,7 @@ while True:
                     # or they want to make changes.
                     option = input("\nEnter 'a' to proceed with this "
                                    "transfer,\nenter 'b' to make "
-                                   "changes: ").lower()
+                                   "changes: \n").lower()
                     if option in ["a", "b"]:
                         break
                     else:
@@ -218,7 +218,7 @@ while True:
         # If they do, send them back to the selections of transactions.
         # If not, terminate the program.
         choice = input("Would you like to make further transactions? "
-                       "(y/n): ").lower()
+                       "(y/n): \n").lower()
         if choice == "n":
             print("Thank you.  Have a nice day!")
             exit()
